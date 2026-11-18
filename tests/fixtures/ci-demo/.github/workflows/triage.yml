@@ -1,0 +1,12 @@
+name: triage
+on:
+  issues:
+    types: [opened]
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: some-org/label-action@v2
+      - name: Echo title
+        run: |
+          echo "New issue: ${{ github.event.issue.title }}"

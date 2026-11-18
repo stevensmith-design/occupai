@@ -1,0 +1,39 @@
+# Config used by `make demo`. projects_root and storage.path are replaced with temp folders.
+version: 1
+projects_root: /tmp/occupai-demo/projects
+exclusions:
+  - "*/.claude/worktrees/*"
+my_owners:
+  - example-owner
+stack:
+  languages: [typescript, python]
+  frameworks: [next.js, react]
+  runtimes: [node, python]
+  package_managers: [npm, pip]
+  platforms: [github-actions, supabase, firebase]
+  ai_tools: [claude-code, mcp]
+news_sources:
+  campaigns_and_supply_chain:
+    - name: Demo supply-chain blog (offline sample)
+      url: https://example.com/demo/
+  official:
+    - name: Demo advisories (offline sample)
+      url: https://example.com/demo/
+  stack_vendors:
+    - name: Demo vendor blog (offline sample)
+      url: https://example.com/demo/
+  news:
+    - name: Demo news (offline sample)
+      url: https://example.com/demo/
+timezone: UTC
+schedule:
+  briefing: "52 7 * * *"
+  scan: "12 8 * * *"
+  full_day: monday
+storage:
+  path: /tmp/occupai-demo/storage
+  mode: local
+notifications:
+  push: false
+  max_chars: 200
+  quiet_days: false

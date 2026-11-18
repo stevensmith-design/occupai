@@ -1,0 +1,5 @@
+{
+  "mcpServers": {
+    "files": {"command": "npx", "args": ["-y", "@example/mcp-files-server", "./docs"]}
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "schema": "occupai/checks v1",
+  "updated": "2026-11-16",
+  "notes": "DEMO DATA. Every item here is fictional and exists only to show the flow on the test fixtures. IDs start with 'demo-'; sources point to example.com.",
+  "checks": [
+    {
+      "id": "demo-next-cache-leak",
+      "title": "Fictional Next.js security release (cache leak)",
+      "date": "2026-11-16",
+      "severity": "high",
+      "scope": "project",
+      "type": "package",
+      "match": {
+        "packages": [
+          {
+            "name": "next",
+            "affected": ">=15.0.0 <15.5.29 || >=16.0.0 <16.4.5"
+          }
+        ]
+      },
+      "fix": "next >= 16.4.5 (15.x: >= 15.5.29); redeploy",
+      "baseline_rule": "next >= 16.4.5 (15.x: >= 15.5.29)",
+      "source": "https://example.com/demo/next-security-release",
+      "status_by_project": {}
+    },
+    {
+      "id": "demo-fake-interview-npm",
+      "title": "Fictional fake-interview malware in look-alike npm packages",
+      "date": "2026-11-16",
+      "severity": "critical",
+      "scope": "project+machine",
+      "type": "malicious-package",
+      "match": {
+        "malicious_packages": [
+          "occupai-demo-anim",
+          "occupai-demo-anim-js"
+        ],
+        "files": [
+          {
+            "glob": ".vscode/tasks.json",
+            "contains": "\"runOn\"\\s*:\\s*\"folderOpen\""
+          }
+        ]
+      },
+      "fix": "remove the package; treat the machine as compromised and rotate credentials",
+      "baseline_rule": "never-use list",
+      "source": "https://example.com/demo/fake-interview-malware",
+      "status_by_project": {}
+    },
+    {
+      "id": "demo-node-security-release",
+      "title": "Fictional Node.js security releases (and Node 20 is end-of-life)",
+      "date": "2026-11-16",
+      "severity": "high",
+      "scope": "project+machine",
+      "type": "runtime",
+      "match": {
+        "runtimes": [
+          {
+            "name": "node",
+            "affected": "<22.0.0 || >=22.0.0 <22.23.5 || >=24.0.0 <24.22.3"
+          }
+        ]
+      },
+      "fix": "pin workflows to a major only (22 or 24); exact pins >= 22.23.5 / 24.22.3; update the machine",
+      "baseline_rule": "Node >= 22.23.5 / 24.22.3; never Node <= 20",
+      "source": "https://example.com/demo/node-security-release",
+      "status_by_project": {},
+      "status_machine": "open"
+    },
+    {
+      "id": "demo-ci-stealer",
+      "title": "Fictional CI secret stealer pushed through hijacked accounts",
+      "date": "2026-11-16",
+      "severity": "critical",
+      "scope": "project",
+      "type": "indicator",
+      "match": {
+        "git": {
+          "branches": [
+            "ci-helper-[0-9]{4}"
+          ],
+          "commit_messages": [
+            "chore: add ci helper"
+          ],
+          "since": "2026-01-01"
+        }
+      },
+      "fix": "if found: assume every CI-readable secret leaked; rotate them; review recent workflow runs",
+      "baseline_rule": "none (indicator check)",
+      "source": "https://example.com/demo/ci-secret-stealer",
+      "status_by_project": {}
+    },
+    {
+      "id": "demo-paas-breach",
+      "title": "Fictional hosting provider env-var breach",
+      "date": "2026-11-16",
+      "severity": "medium",
+      "scope": "account",
+      "type": "service",
+      "match": {
+        "files": [
+          {
+            "glob": "demo-paas.json"
+          }
+        ]
+      },
+      "fix": "rotate secrets stored on the provider; set AI-key spend limits",
+      "baseline_rule": "set spend limits on every AI provider key",
+      "source": "https://example.com/demo/paas-breach",
+      "status_by_project": {},
+      "status_global": "open"
+    },
+    {
+      "id": "demo-httpd-rce",
+      "title": "Fictional Apache httpd module RCE",
+      "date": "2026-11-16",
+      "severity": "medium",
+      "scope": "project",
+      "type": "runtime",
+      "match": {
+        "files": [
+          {
+            "glob": "httpd.conf"
+          },
+          {
+            "glob": "Dockerfile*",
+            "contains": "(?im)^\\s*FROM\\s+httpd"
+          }
+        ]
+      },
+      "fix": "httpd >= 2.4.71, or Protocols http/1.1 as a stopgap",
+      "baseline_rule": "httpd >= 2.4.71 (if used)",
+      "source": "https://example.com/demo/httpd-rce",
+      "status_by_project": {}
+    }
+  ]
+}

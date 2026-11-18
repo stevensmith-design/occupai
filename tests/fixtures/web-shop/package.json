@@ -1,0 +1,6 @@
+{
+ "name": "web-shop",
+ "version": "1.0.0",
+ "private": true,
+ "dependencies": {"next": "16.2.1","react": "19.2.9"}
+}

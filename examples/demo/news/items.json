@@ -1,0 +1,89 @@
+{
+  "note": "The analysis a briefing agent would write after reading the six sample articles. Fictional.",
+  "items": [
+    {
+      "id": "demo-ci-stealer",
+      "article": "04-ci-stealer.md",
+      "title": "CI secret stealer pushed through hijacked accounts",
+      "priority": "CRITICAL",
+      "reason": "active campaign; erases its own traces",
+      "what_happened": "Attackers using stolen GitHub accounts push a branch and commit that add a secret-dumping workflow. The workflow deletes its own run afterwards.",
+      "quote": "This campaign is active and spreading.",
+      "who": "anyone with write access to GitHub repos that run Actions",
+      "touches_stack": "yes (GitHub Actions)",
+      "steps": ["Search every repo for branches matching `ci-helper-NNNN` and commits titled `chore: add ci helper` (the run does this for you).", "If found: rotate every secret those workflows could read, then review recent workflow runs for gaps in run numbers."],
+      "action": "Check repos for `ci-helper-NNNN` branches; rotate CI secrets if found",
+      "why": "active secret theft via CI"
+    },
+    {
+      "id": "demo-fake-interview-npm",
+      "article": "02-fake-interview.md",
+      "title": "Fake job interviews deliver malware through look-alike npm packages",
+      "priority": "CRITICAL",
+      "reason": "malware in packages developers install directly",
+      "what_happened": "A fake hiring company told developers to install look-alike UI animation packages that steal credentials on install. Some also add a VS Code task that runs when a folder opens.",
+      "quote": "Treat any machine that installed them as compromised.",
+      "who": "developers who run take-home tests or install UI animation plugins",
+      "touches_stack": "yes (npm)",
+      "steps": ["Search lockfiles for the exact names `occupai-demo-anim` and `occupai-demo-anim-js` (not substrings: `occupai-demo-animate` is legitimate).", "Look for `.vscode/tasks.json` with `\"runOn\": \"folderOpen\"`; turn off VS Code `task.allowAutomaticTasks`.", "If found: remove the package and rotate every credential on that machine."],
+      "action": "Remove `occupai-demo-anim` / `occupai-demo-anim-js` if present; rotate credentials",
+      "why": "credential stealer runs on install"
+    },
+    {
+      "id": "demo-node-security-release",
+      "article": "03-node-release.md",
+      "title": "Node.js security releases; Node 20 is end-of-life",
+      "priority": "HIGH",
+      "reason": "remotely triggerable server bugs; fixes available",
+      "what_happened": "Node.js 22.23.5 and 24.22.3 fix several high-severity HTTP/2 and TLS issues. Node 20 gets no fixes.",
+      "quote": "Node.js 20 is end-of-life and receives no fixes.",
+      "who": "anyone running Node servers, CI or local tooling",
+      "touches_stack": "yes (node)",
+      "steps": ["Run `node -v` and update to 22.23.5 / 24.22.3 or newer.", "Move exact pins (`.nvmrc`, workflow `node-version`, Dockerfile `FROM node:`) to a fixed version, or a major only in CI."],
+      "action": "Update Node to 22.23.5 / 24.22.3; fix exact pins (`node -v`)",
+      "why": "HTTP/2 and TLS fixes; 20 is EOL"
+    },
+    {
+      "id": "demo-next-cache-leak",
+      "article": "01-next-release.md",
+      "title": "Next.js security release (cache leak)",
+      "priority": "HIGH",
+      "reason": "cross-user data leak; fix available",
+      "what_happened": "Next.js 16.4.5 and 15.5.29 fix a cache leak that can serve one user's page to another. No exploitation reported.",
+      "quote": "There is no evidence of exploitation.",
+      "who": "anyone running Next.js 15.x or 16.x",
+      "touches_stack": "yes (next.js)",
+      "steps": ["In each Next.js project: `npm install next@16.4.5` (or `next@15.5.29` on 15.x) in a branch, build and test, then redeploy."],
+      "action": "Upgrade Next.js: `npm install next@16.4.5` (15.x: 15.5.29)",
+      "why": "one user's page served to another"
+    },
+    {
+      "id": "demo-httpd-rce",
+      "article": "05-httpd.md",
+      "title": "Apache httpd HTTP/2 module flaw",
+      "priority": "MEDIUM",
+      "reason": "serious but not exploited; only matters if you run httpd",
+      "what_happened": "A race condition in an HTTP/2 module can corrupt memory in httpd 2.4.55 to 2.4.70. Version 2.4.71 fixes it.",
+      "quote": "No exploitation has been reported.",
+      "who": "anyone self-hosting Apache httpd with HTTP/2",
+      "touches_stack": "no (unless you self-host httpd)",
+      "steps": ["Only if you run httpd: upgrade to 2.4.71, or set `Protocols http/1.1` as a stopgap."],
+      "action": "Only if you run httpd: upgrade to 2.4.71",
+      "why": "remote memory corruption"
+    },
+    {
+      "id": "demo-paas-breach",
+      "article": "06-paas-breach.md",
+      "title": "Hosting provider env-var breach",
+      "priority": "MEDIUM",
+      "reason": "contained breach; AI keys in env vars are a target",
+      "what_happened": "A hosting provider says attackers decrypted environment variables for some workspaces and ran up fraudulent AI usage.",
+      "quote": "Customers should rotate stored secrets and set spend limits on AI keys.",
+      "who": "customers of that provider; anyone storing AI keys as env vars",
+      "touches_stack": "maybe",
+      "steps": ["If you use that provider: rotate stored secrets.", "Everyone: set spend limits and usage alerts on AI provider keys."],
+      "action": "Set spend limits on AI provider keys; rotate if you used the provider",
+      "why": "stolen AI keys get abused fast"
+    }
+  ]
+}

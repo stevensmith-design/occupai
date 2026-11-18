@@ -1,0 +1,6 @@
+{
+  "schema": "occupai/checks v1",
+  "updated": "YYYY-MM-DD",
+  "notes": "One entry per tracker item, as a reusable check. scope: project = checked per project folder; machine = your computer; account = external services. status_by_project lists only projects where the check matched or was explicitly cleared. Any project not listed, including every new one, is checked by replaying 'match'. Schema: schema/checks.schema.json.",
+  "checks": []
+}

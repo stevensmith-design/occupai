@@ -1,0 +1,18 @@
+# Private source material: never published
+_reference/
+
+# Secrets and local agent settings
+.env*
+!.env.example
+.claude/settings.local.json
+
+# Build output, demo output, caches
+build/
+node_modules/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+
+# OccupAI data (reports, tracker, config): kept out of git
+data/

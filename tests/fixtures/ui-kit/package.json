@@ -1,0 +1,6 @@
+{
+ "name": "ui-kit",
+ "version": "1.0.0",
+ "private": true,
+ "dependencies": {"occupai-demo-animate": "1.0.7","next": "16.4.5"}
+}

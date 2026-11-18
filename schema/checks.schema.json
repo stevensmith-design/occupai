@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/OWNER/occupai/schema/checks.schema.json",
+  "title": "OccupAI security library: checks.json",
+  "type": "object",
+  "required": ["schema", "updated", "checks"],
+  "properties": {
+    "schema": {"const": "occupai/checks v1"},
+    "updated": {"type": "string", "description": "YYYY-MM-DD of the last change"},
+    "notes": {"type": "string"},
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "date", "severity", "scope", "type", "match", "fix", "source", "status_by_project"],
+        "properties": {
+          "id": {"type": "string", "description": "Same ID as the tracker row: a CVE or a lowercase slug", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"},
+          "title": {"type": "string"},
+          "date": {"type": "string", "description": "YYYY-MM-DD the item was published"},
+          "severity": {"enum": ["critical", "high", "medium", "low"]},
+          "scope": {"enum": ["project", "machine", "account", "project+machine", "project+account"]},
+          "type": {"enum": ["package", "malicious-package", "runtime", "config", "indicator", "service"]},
+          "match": {
+            "type": "object",
+            "description": "Rules the scan replays per project (occupai_scan match). machine and account are for the agent; any other key, or a check with no project rule, makes the project unknown.",
+            "properties": {
+              "packages": {"type": "array", "items": {"type": "object", "required": ["name", "affected"],
+                "properties": {"name": {"type": "string", "description": "Exact package name (npm lockfile name, or PyPI project name)"},
+                  "ecosystem": {"enum": ["npm", "pypi"], "default": "npm", "description": "pypi: matched against pinned name==version lines in requirements*.txt"},
+                  "affected": {"type": "string", "description": "npm: comparators (>=, <=, >, <, =) on full versions, joined by spaces or commas, and ||, e.g. '>=16.0.0 <16.4.5 || 19.3.0'. pypi: PEP 440 comparators (>=, <=, >, <, ==, !=) joined by commas, and ||. Anything else is unsupported: projects show as unknown, not clean."}}}},
+              "malicious_packages": {"type": "array", "items": {"type": "string"}, "description": "Exact lockfile names; any version except 0.0.1-security"},
+              "runtimes": {"type": "array", "items": {"type": "object", "required": ["name", "affected"],
+                "properties": {"name": {"enum": ["node", "python"]}, "affected": {"type": "string", "description": "npm range syntax; a partial pin such as '22' is judged by the top of its line"}}}},
+              "files": {"type": "array", "items": {"type": "object", "required": ["glob"],
+                "properties": {"glob": {"type": "string"}, "contains": {"type": "string", "description": "Python regex; sensitive files are never opened"}}}},
+              "git": {"type": "object", "properties": {
+                "branches": {"type": "array", "items": {"type": "string"}, "description": "Regex, full match on the branch name"},
+                "commit_messages": {"type": "array", "items": {"type": "string"}, "description": "Exact commit subjects"},
+                "since": {"type": "string"}}},
+              "machine": {"description": "Command for the user to run on their computer, e.g. 'node -v', or one per OS",
+                "oneOf": [{"type": "string"},
+                          {"type": "object", "additionalProperties": false, "minProperties": 1,
+                           "properties": {"macos": {"type": "string"}, "linux": {"type": "string"},
+                                          "windows": {"type": "string"}}}]},
+              "account": {"type": "string"}
+            }
+          },
+          "fix": {"type": "string"},
+          "baseline_rule": {"type": "string"},
+          "source": {"type": "string", "format": "uri"},
+          "status_by_project": {"type": "object", "additionalProperties": {"type": "string"},
+            "description": "project unit -> open | done | not-affected (optionally with a short note in brackets)"},
+          "status_machine": {"type": "string"},
+          "status_global": {"type": "string"}
+        }
+      }
+    }
+  }
+}

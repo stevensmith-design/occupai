@@ -1,0 +1,49 @@
+# OccupAI configuration. See occupai.config.example.yaml for every option, with comments.
+# Tip: setup copies the example to data/occupai.config.yaml (gitignored) so your paths and owners stay out of git.
+version: 1
+kit_path: ~/code/occupai
+projects_root: ~/projects
+exclusions:
+  - "*/.claude/worktrees/*"
+  - "backups*"
+  - "archive*"
+  - "occupai"
+my_owners: []
+stack:
+  languages: [typescript, javascript, python]
+  frameworks: [next.js, react]
+  runtimes: [node, python]
+  package_managers: [npm, pip]
+  platforms: [github-actions]
+  ai_tools: [claude-code, mcp]
+news_sources:
+  campaigns_and_supply_chain:
+    - name: Socket
+      url: https://socket.dev/blog
+    - name: StepSecurity
+      url: https://www.stepsecurity.io/blog
+    - name: GitHub Changelog
+      url: https://github.blog/changelog/
+  official:
+    - name: CISA Known Exploited Vulnerabilities
+      url: https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+  stack_vendors:
+    - name: Node.js security releases
+      url: https://nodejs.org/en/blog/vulnerability
+    - name: Next.js blog
+      url: https://nextjs.org/blog
+  news:
+    - name: BleepingComputer
+      url: https://www.bleepingcomputer.com/
+timezone: UTC
+schedule:
+  briefing: "52 7 * * *"
+  scan: "12 8 * * *"
+  full_day: monday
+storage:
+  path: ~/.occupai
+  mode: local
+notifications:
+  push: true
+  max_chars: 200
+  quiet_days: false

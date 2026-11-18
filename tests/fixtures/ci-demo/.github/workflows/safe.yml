@@ -1,0 +1,16 @@
+name: safe
+on:
+  issues:
+    types: [opened]
+permissions:
+  contents: read
+jobs:
+  echo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: some-org/label-action@0123456789abcdef0123456789abcdef01234567
+      - name: Echo title
+        env:
+          TITLE: ${{ github.event.issue.title }}
+        run: |
+          echo "New issue: $TITLE"
