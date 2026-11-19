@@ -6,6 +6,8 @@
 
 **A daily security check-in for people who build with AI.** v0.1, a side project.
 
+Made by Steven Smith. More on OccupAI and my other work: [stevensmith.dev/occupai](https://stevensmith.dev/occupai)
+
 I build a lot of small projects with AI coding agents, and I wanted something that tells me each morning what's new in security that touches my stack, checks whether any of it is in my projects, and remembers what I've already dealt with. OccupAI is that, packaged so you can run it too: a few agent automations (prompts, a read-only Python script and two skills) for Claude Desktop, Claude Code, Codex or a similar agent. It isn't a security product or a scanner, and it doesn't replace one. An AI does the research, so it can miss things. Everything it does to your projects is read-only, and you stay in charge of every fix.
 
 **Covers secrets, AI agent setups, GitHub Actions, npm and Python dependencies, and Supabase/Firebase rules. More ecosystems later.**
@@ -18,6 +20,23 @@ I build a lot of small projects with AI coding agents, and I wanted something th
 </table>
 
 <sub>These illustrate the summary line at the top of each report. The octopus doesn't appear in the reports yet (see the Roadmap).</sub>
+
+### What a morning's to-do list looks like
+
+From `make demo`, which runs the real checks on made-up projects with planted issues (trimmed):
+
+> **OccupAI projects — 2026-11-19 · full (DEMO, test fixtures)**
+>
+> **Result:** 6 new · 4 affect you (4 projects) · 6 project issues · 1 closed automatically · 0 still open
+>
+> 🔴 **CRITICAL — do today**
+> - [ ] **[demo-ci-stealer]** indicator-repo: Check repos for `ci-helper-NNNN` branches; rotate CI secrets if found — active secret theft via CI
+>
+> 🟠 **HIGH — this week**
+> - [ ] **[hygiene-db-supa-app]** supa-app: supabase-table-without-rls (supabase/migrations/0001_init.sql) — anyone with the app's public key can read or write this data
+> - [ ] **[hygiene-secrets-web-shop]** web-shop: key-pattern (src/lib/ai.ts); sensitive-file-committed (.env) — a committed key may already be copied; rotate it first
+
+In the full report, each line also ends with what to say to your AI tool to fix it.
 
 ## What it does
 
@@ -33,7 +52,7 @@ I build a lot of small projects with AI coding agents, and I wanted something th
 
 1. **Download** this repo (green **Code** button → **Download ZIP**, then unzip it) or `git clone` it. Keep the folder where it is afterwards: the daily tasks run from it.
 2. **Open the folder** in your AI tool. In Claude Desktop: start a new chat, click **+** → **Add folder** and pick the occupai folder. (Claude Code or Codex: start it in that folder.)
-3. **Say "Set up OccupAI".** The agent follows [SETUP.md](SETUP.md): it checks for Python 3.9 or newer, asks three questions (your projects folder, a time, notifications), shows the projects it will watch (backups and copies unticked) and what they use, asks which GitHub usernames and organisations you work in, then creates two daily tasks (briefing, then scan 20 minutes later) from the chat, with your projects folder and (if it isn't inside your projects folder) the kit folder attached, then asks whether to run the first check now: you start each task once in your scheduled tasks (briefing, then scan) and approve its access in one go. The first scan checks every project and can take 10–20 minutes.
+3. **Say "Set up OccupAI".** It checks you have Python 3.9 or newer, asks three questions (your projects folder, a time, notifications), shows the projects it will watch, then sets up two daily tasks: a briefing and, 20 minutes later, a scan. You start each task once yourself to approve its access. The full walkthrough is in [SETUP.md](SETUP.md). The first scan checks every project and can take 10–20 minutes.
 
 **What you get each day:** the briefing writes a short news brief you can share with your team (`DATE-news.md`, no project names or findings), and the scan writes your private to-do list (`DATE-projects.md`, one checkbox line per action, 🔴/🟠/🟡/⚪). The chat message is a count line, up to three actions and the two file names.
 
@@ -46,7 +65,7 @@ Everything runs on your computer by default, and everything it keeps is in the k
 | Codex | [docs/setup/codex.md](docs/setup/codex.md): scheduled tasks or cron + `codex exec` | untested |
 | Other agents | [docs/setup/generic.md](docs/setup/generic.md): cron + your agent's CLI | untested |
 
-**Mark something handled:** open the OccupAI folder in your AI tool and say "mark <ID> done" (or edit `data/actioned.md`).
+**Mark something handled:** open the OccupAI folder in your AI tool and say `mark <ID> done` (or edit `data/actioned.md`).
 **Your stack and news sources:** after the first full run, relevance comes from what your projects actually use (`data/library/stack.md`). `news_sources` in the config is an example list to edit.
 **Uninstall:** delete both tasks in **Scheduled**, in Claude's sidebar (or your cron/launchd entries), then the kit folder (it holds `data/`). Nothing else is installed.
 
@@ -117,7 +136,7 @@ STORAGE (KIT/data)     actioned.md · library/ (checks.json, baseline.md) · sta
 
 **Where is my data?** Plain Markdown and JSON files in the kit's `data/` folder (`~/.occupai` for older installs, or wherever `storage.path` points). See [docs/storage.md](docs/storage.md), including the optional Claude Projects mode.
 
-**How do I mark something handled?** Open the OccupAI folder in your AI tool and say "mark <ID> done" (elsewhere, with the `occupai` skill installed: `/occupai mark <ID> done`), run `python3 scan.py tracker mark <ID> done`, or edit `actioned.md`.
+**How do I mark something handled?** Open the OccupAI folder in your AI tool and say `mark <ID> done` (elsewhere, with the `occupai` skill installed: `/occupai mark <ID> done`), run `python3 scan.py tracker mark <ID> done`, or edit `actioned.md`.
 
 ## Roadmap
 Not in v0.1:
