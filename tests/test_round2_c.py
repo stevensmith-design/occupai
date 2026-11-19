@@ -97,7 +97,7 @@ class TestSetupDoc(unittest.TestCase):
 
     def test_discovery_before_first_scan(self):
         s = self.setup
-        self.assertLess(s.index("scan.py discover"), s.index("Run each once now"))
+        self.assertLess(s.index("scan.py discover"), s.index("Run the first check now?"))
         for part in ("**Projects I'll watch:**", "**Scanning for:**", '"Anything to add or remove?"',
                      "GitHub usernames and organisations", "clients', employer's"):
             self.assertIn(part, s)
@@ -106,7 +106,7 @@ class TestSetupDoc(unittest.TestCase):
         s = self.setup
         self.assertIn("Create **two** local scheduled tasks yourself", s)
         self.assertIn("**one message to paste into a new Claude Desktop chat**", s)
-        self.assertEqual(len(re.findall(r"scheduled task", s)), 2)  # the task, and the paste message for it
+        self.assertEqual(len(re.findall(r"scheduled task", s)), 3)  # the tasks, the paste message, the first-run question
         for dev in ("Code tab", "Bash(", "Edit(", "settings.json", "Settings >", "Keep computer awake",
                     "Working folder", "Run now"):
             self.assertNotIn(dev, s)
@@ -117,9 +117,8 @@ class TestSetupDoc(unittest.TestCase):
 
     def test_approve_once_and_expectations(self):
         s = self.setup
-        self.assertIn("Run each once now, briefing first, while the user is here", s)
+        self.assertIn("Run the first check now? (Recommended, about 10–20 minutes.)", s)
         self.assertIn("choose 'always allow'", s)
-        self.assertIn("The first scan checks every project and can take 10–20 minutes", s)
         self.assertIn("re-check every project (10–20 minutes)", s)
         self.assertIn("The next full run re-checks every project and can take 10–20 minutes", read("prompts", "howto.md"))
         self.assertIn('say "Checked <done> of <done+remaining> projects"', read("prompts", "run.md"))

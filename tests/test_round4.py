@@ -27,8 +27,8 @@ class TestSetupRound4(unittest.TestCase):
 
     def test_no_helper_tasks(self):
         s = self.s
-        self.assertIn("Never create helper or one-off tasks", s)
-        self.assertIn("reply **start the scan**", s)
+        self.assertIn("Never start tasks or create helper or one-off tasks", s)
+        self.assertNotIn("start the scan", s)
         self.assertNotIn("reminder", s.lower())
 
     def test_numbered_folder_list_in_two_groups(self):
@@ -96,8 +96,9 @@ class TestDocsMatchWhatExists(unittest.TestCase):
 
     def test_changelog_release_entry(self):
         c = read("CHANGELOG.md")
-        first = re.search(r"(?m)^## .*$", c).group(0)
-        self.assertIn("0.1.0", first)
+        headings = re.findall(r"(?m)^## .*$", c)
+        # the newest release is first, after an optional "Unreleased" section
+        self.assertIn("0.1.0", headings[1] if headings[0] == "## Unreleased" else headings[0])
 
 
 if __name__ == "__main__":

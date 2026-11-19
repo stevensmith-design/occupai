@@ -1,6 +1,6 @@
 # Setup: Claude Desktop (scheduled tasks)
 
-The primary path: open the kit folder in Claude Desktop and say **"Set up OccupAI"**. Claude follows [SETUP.md](../../SETUP.md) entirely in the chat: three questions, the projects it will watch, two scheduled tasks (briefing, then scan) created from the chat with your projects folder and (if outside it) the kit folder attached (or one message to paste into a new chat), and a first run of each while you're there. **This page is the developer fallback**: the manual steps, permissions and app settings behind that.
+The primary path: open the kit folder in Claude Desktop and say **"Set up OccupAI"**. Claude follows [SETUP.md](../../SETUP.md) entirely in the chat: three questions, the projects it will watch, two scheduled tasks (briefing, then scan) created from the chat with your projects folder and (if outside it) the kit folder attached (or one message to paste into a new chat), then a question whether to run the first check now: you start each task yourself in your scheduled tasks. **This page is the developer fallback**: the manual steps, permissions and app settings behind that.
 
 OccupAI is modelled on a setup the author runs daily in Claude Desktop. Setup and both tasks were tested end to end from this kit on one Mac (November 2026); please report anything that doesn't match on yours.
 

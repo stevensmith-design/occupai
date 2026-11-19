@@ -246,7 +246,7 @@ class TestSetupScope(unittest.TestCase):
         setup = read(os.path.join(REPO, "SETUP.md"))
         self.assertLess(len(setup.split()), 950)
         sched = setup.split("## 6.")[1].split("## 7.")[0]
-        self.assertIn("run each once now", sched)
+        self.assertIn("Run the first check now?", sched)
         self.assertIn("look up security news", sched)  # web access, approved once in the same run
         finish = setup.split("## 7.")[1]
         self.assertIn("in a chat on the OccupAI folder", finish)

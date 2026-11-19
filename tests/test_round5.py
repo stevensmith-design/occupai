@@ -76,7 +76,7 @@ class TestKitOutsideTheProjectsFolder(unittest.TestCase):
         self.assertEqual(kit["path"], os.path.realpath(self.kit))
         # the SETUP text asks for the kit in the access request and attaches it to both tasks
         self.assertIn("If KIT isn't inside the projects folder, add KIT to that request", setup)
-        self.assertIn("with the projects folder and (if outside it) KIT attached", setup)
+        self.assertIn("Attach exactly the folders approved in step 3: `projects_root`, plus KIT if outside it.", setup)
         task = next(b for b in re.findall(r"```\n(.*?)```", setup, re.S) if "Run OccupAI" in b)
         self.assertIn("If a folder (projects, KIT) isn't at its usual path, it's at $HOME/mnt/<folder name>",
                       task)
@@ -165,7 +165,7 @@ class TestPromptsRound5(unittest.TestCase):
         self.assertIn("the briefing runs `SCAN marker start` first and `SCAN marker done` last", run)
         self.assertIn("The scan runs `SCAN marker wait` first", run)
         self.assertIn("The briefing is still running. Reply **try again** in a few minutes.", run)
-        self.assertIn("repeat `python3 KIT/scan.py marker wait` until `briefing_running` is false", read("SETUP.md"))
+        self.assertNotIn("marker", read("SETUP.md"))  # the scan prompt handles overlap; setup never waits itself
 
     def test_markers_follow_the_scorecard_switch(self):
         run = read("prompts", "run.md")

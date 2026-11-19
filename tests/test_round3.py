@@ -218,7 +218,7 @@ class TestSetupRound3(unittest.TestCase):
     def test_task_from_the_chat_with_folders_attached(self):
         s = self.s
         self.assertIn("Create **two** local scheduled tasks yourself, from this chat", s)
-        self.assertIn("with the projects folder and (if outside it) KIT attached", s)
+        self.assertIn("Attach exactly the folders approved in step 3: `projects_root`, plus KIT if outside it.", s)
         block = next(b for b in re.findall(r"```\n(.*?)```", s, re.S) if "Run OccupAI" in b)
         self.assertIn("$HOME/mnt/<folder name>", block)
         self.assertLess(s.index("one message to paste"), s.index("Last resort: Claude Code"))
