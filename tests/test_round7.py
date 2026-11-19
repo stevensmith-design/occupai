@@ -40,5 +40,22 @@ class TestSetupRound7(unittest.TestCase):
         self.assertNotIn("a first run of each while you're there", read("docs", "setup", "claude-desktop.md"))
 
 
+class TestFinalMessageTemplate(unittest.TestCase):
+    def test_literal_template_for_both_modes(self):
+        run = read("prompts", "run.md")
+        finish = run.split("## 6. Finish")[1]
+        self.assertIn("Final message: copy this template. Nothing else: no paragraphs, no other file names.", finish)
+        template = finish.split("```\n")[1]
+        self.assertEqual(template.splitlines(), [
+            "N new items · X may affect your projects → see your to-do list (DATE-projects.md)",
+            "🔴 [ID] what — fix",
+            "Reports: briefings/DATE-news.md · briefings/DATE-projects.md",
+        ])
+        self.assertIn("Up to 3 marker lines, highest first.", finish)
+        self.assertIn("Scan: the Result line replaces line 1", finish)
+        self.assertIn('Scorecard off: "N new items".', finish)
+        self.assertNotIn("a count line (briefing:", run)
+
+
 if __name__ == "__main__":
     unittest.main()

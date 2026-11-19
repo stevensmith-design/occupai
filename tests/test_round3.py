@@ -166,7 +166,7 @@ class TestTwoOutputs(unittest.TestCase):
                      "- [ ] [ID] <project>: action — why.", "(NEW) / (REOPENED) / (still open since YYYY-MM-DD)",
                      "top 3 fixes", "`mostly_in`", "say '<project>/<folder> is inactive' to quiet it",
                      "Is <project> still active or deployed? Say '<project> is inactive' to quiet it.",
-                     "scan: the Result line), up to 3 one-line actions or items, and the two file names."):
+                     "Reports: briefings/DATE-news.md · briefings/DATE-projects.md"):
             self.assertIn(part, run)
         for marker in ("🔴 CRITICAL", "🟠 HIGH", "🟡 MEDIUM", "⚪ LOW"):
             self.assertIn(marker, run)
@@ -238,7 +238,7 @@ class TestTwoTasks(unittest.TestCase):
                      "Matches become tracker actions (step 4), never a second action list.",
                      'Only if `news_scorecard` is on (default): affected items end with "→ see your to-do list"',
                      "including the briefing's quick-match rows in the tracker",
-                     '"N new items; X may affect your projects → see your to-do list (DATE-projects.md)"'):
+                     'N new items · X may affect your projects → see your to-do list (DATE-projects.md)'):
             self.assertIn(part, run)
         news = run[run.index("YYYY-MM-DD-news.md`**"):run.index("YYYY-MM-DD-projects.md`**")]
         self.assertNotIn("- [ ]", news)  # only the project report has checkboxes

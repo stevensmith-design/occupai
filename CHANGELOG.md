@@ -2,6 +2,7 @@
 
 ## Unreleased
 - **Setup, from fresh-install test 3:** both tasks get exactly the folders approved in step 3 (the projects folder, plus the kit if it's outside it), never individual projects, which left every folder showing "needs approval". The agent no longer starts the tasks (agents can't use "Run now"): setup ends by asking whether to run the first check now and tells the user how to start the briefing, then the scan. Setup no longer waits on the briefing marker itself; the scan prompt already handles overlap.
+- **Final chat message:** `run.md` now gives a literal template to copy (count or Result line, up to three 🔴/🟠/🟡/⚪ lines, one "Reports:" line) and says "nothing else: no paragraphs, no other file names", for both the briefing and the scan.
 
 ## 0.1.0 (2026-11-18): first public release
 OccupAI is a daily security check-in for people who build with AI: a few read-only agent automations, a Python script (standard library only) and two skills.

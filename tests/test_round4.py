@@ -54,8 +54,7 @@ class TestReportsRound4(unittest.TestCase):
 
     def test_chat_message_and_accuracy(self):
         run = read("prompts", "run.md")
-        self.assertIn("Final message, no paragraphs: a count line", run)
-        self.assertIn("up to 3 one-line actions or items, and the two file names", run)
+        self.assertIn("Final message: copy this template. Nothing else: no paragraphs, no other file names.", run)
         self.assertIn("may still apply until <framework> ships a fix", run)
         self.assertIn("never a rule matching every version", run)
         self.assertIn("naming files as files (not folders)", run)

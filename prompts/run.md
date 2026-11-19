@@ -30,7 +30,7 @@ Per new item, or tracker item with a material change (REOPENED or UPDATED, sayin
 - **ID**: the CVE or a stable lowercase slug. Reuse the tracker ID for known items.
 - **What happened** in two sentences, and one verbatim quote under 15 words from a page fetched in this run, with source and date (or "no quote: page not fetched").
 - **Priority** with a reason: CRITICAL (actively exploited, mass compromise, malware in a popular package), HIGH (serious, fix available, likely exploited), MEDIUM / LOW.
-- **Touches my stack?** yes / no / maybe, judged against stack.md (any listed tech: hosting, CI, databases, SDKs), naming the projects. Before the first full run, use `stack` in CONFIG.
+- **Touches my stack?** yes / no / maybe, judged against stack.md (any listed tech), naming the projects. Before the first full run, use `stack` in CONFIG.
 - **What to do:** exact commands, fixed versions, indicators and what to rotate. Defang every IOC.
 - **Fixed version not found:** mark the check `unknown` and say so; never a rule matching every version. A framework that bundles vulnerable code with no confirmed fix gets one plain line: "<framework> X.Y fixes <other issue>; <CVE> may still apply until <framework> ships a fix", so two items never seem to contradict.
 
@@ -54,12 +54,12 @@ SCAN route-check
 SCAN audit --resume $ST/audit-progress.json --budget 100 --out $ST/audit-out.json
 SCAN save-state --hygiene $ST/hygiene-out.json --audit $ST/audit-out.json
 ```
-`save-state` says why it refuses a file; projects in `not_saved_inputs_changed` are re-checked next run.
+Projects in `not_saved_inputs_changed` are re-checked next run.
 
 **What "clean" means.** Only `ok` (hygiene), `not-affected` (match) and `"status": "complete"` mean checked, nothing found. `incomplete`, `error` and `unknown` are "not fully checked": never report them as clean or close rows on them. List them under "Not checked" with their `skipped` reasons and any `omitted` folders (for depth-limit, name `cut_at`). `carried_findings` and `carried_unverified` still stand.
 
 Reading the results:
-- **News matches** (`match-out.json`): affected projects with evidence (lockfile + version, malicious name, runtime pin, file, git). A rule the script can't express is `unknown`, under "Not checked": never ad-hoc shell commands.
+- **News matches** (`match-out.json`): affected projects with evidence. A rule the script can't express is `unknown`, under "Not checked": never ad-hoc shell commands.
 - **Hygiene:** before a first-time HIGH/CRITICAL finding, rule out false positives (placeholder, detector regex, public client config, fixture) without printing values. `keys_outside_projects`: one line each, naming files as files (not folders), "move to ~/.ssh or delete". Third-party clones go under "Third-party clones" as info; list `owner_unconfirmed` owners for the user to confirm. `silenced` projects: one line with counts.
 - **Audit:** per project only counts of packages with their **own** advisory by severity, and the top 3 fixes (the appendix holds the full list); `via_dependency_only` ones are fixed by fixing the dependency. With `mostly_in`, add "Most are in <folder>: say '<project>/<folder> is inactive' to quiet it". A lockfile with `error` is not covered, never "no vulnerabilities". Copy `route-check` notes to "Not checked". `new_since_last` / `fixed_since_last` give the weekly delta.
 - **Unknown status:** a project with critical/high items and no decision in `your_decisions` gets one line: "Is <project> still active or deployed? Say '<project> is inactive' to quiet it."
@@ -108,4 +108,10 @@ In each group: news matches (including the briefing's quick-match rows in the tr
 ## 6. Finish
 - Save both reports, tracker and library. If STORAGE can't be written, deliver them in your final message and say so.
 - If `notifications.push` is on and your tool supports it: the final message, under `notifications.max_chars`. Skip it on quiet days unless `quiet_days` is true.
-- Final message, no paragraphs: a count line (briefing: "N new items; X may affect your projects → see your to-do list (DATE-projects.md)"; scan: the Result line), up to 3 one-line actions or items, and the two file names.
+- Final message: copy this template. Nothing else: no paragraphs, no other file names.
+```
+N new items · X may affect your projects → see your to-do list (DATE-projects.md)
+🔴 [ID] what — fix
+Reports: briefings/DATE-news.md · briefings/DATE-projects.md
+```
+Up to 3 marker lines, highest first. Scan: the Result line replaces line 1; then the copy-paste line if machine items are open. Scorecard off: "N new items".
