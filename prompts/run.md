@@ -1,6 +1,6 @@
 # OccupAI run (two tasks: briefing, then scan)
 
-**Unattended run:** nobody will answer questions; decide, note it in the report, finish. Read `KIT/prompts/howto.md` first: its rules apply to every step. SCAN = `python3 KIT/scan.py`; you read its short JSON summaries.
+Read `KIT/prompts/howto.md` first: its rules apply to every step. SCAN = `python3 KIT/scan.py`; you read its short JSON summaries.
 
 **Goal:** a shareable news brief, and one private to-do list readable in three minutes: each action once, in priority order, only there.
 
@@ -15,7 +15,7 @@
 - CONFIG: ROOT, `my_owners`, `news_sources`, `timezone`, STORAGE, `notifications`, `schedule`.
 - `STORAGE/actioned.md`: every row. `done` / `not-affected`: don't report again unless REOPENED. `snoozed until DATE`: silent until then. `watching`: only material changes, marked UPDATED. `open`: stays in the actions.
 - The latest report of this mode in `STORAGE/briefings/` (`DATE-news.md` or `DATE-projects.md`): the news window starts at its date (first run: the last 7 days). Reuse each open item's priority. Never read reports older than 14 days.
-- `STORAGE/library/checks.json` (IDs, titles, fix lines) and `stack.md`; `baseline.md` only if an item changes it. If a file is missing, start it from `KIT/templates/`.
+- `STORAGE/library/checks.json` (IDs, titles, fix lines) and `stack.md`; `baseline.md` only if an item changes it.
 - **Catch-up:** if runs were missed, the window covers everything since the last report; say "Catch-up: covers <date> → today (missed: <dates>)". Never invent a missed run's results.
 - If ROOT can't be reached (no folder access, computer asleep, no shell here): the briefing still does the news, says "Projects not checked; the next run will catch up", and skips the quick match; the scan stops. Both end with the recovery step from howto.md.
 
@@ -108,10 +108,18 @@ In each group: news matches (including the briefing's quick-match rows in the tr
 ## 6. Finish
 - Save both reports, tracker and library. If STORAGE can't be written, deliver them in your final message and say so.
 - If `notifications.push` is on and your tool supports it: the final message, under `notifications.max_chars`. Skip it on quiet days unless `quiet_days` is true.
-- Final message: copy this template. Nothing else: no paragraphs, no other file names.
+- Final message: copy this mode's template. Nothing else: no paragraphs, no other file names. If your tool can attach files in the chat (e.g. a file card), attach the report; otherwise give its path.
 ```
-N new items · X may affect your projects → see your to-do list (DATE-projects.md)
-🔴 [ID] what — fix
-Reports: briefings/DATE-news.md · briefings/DATE-projects.md
+N new items · X may affect your projects → to-do list comes with the scan
+🔴 [ID] headline (may affect: <project>)
+🟠 [ID] headline
+Report: briefings/DATE-news.md
 ```
-Up to 3 marker lines, highest first. Scan: the Result line replaces line 1; then the copy-paste line if machine items are open. Scorecard off: "N new items".
+Briefing: news only, no actions or fixes; up to ~10 headlines, most urgent first; "(may affect: …)" only where the quick match matched a project. Scorecard off: line 1 is "N new items", no "(may affect)".
+```
+<Result line>
+🔴 [ID] <project or "your computer">: action — Fix: <step>
+<check-on-your-computer line, if machine items are open>
+To-do list: briefings/DATE-projects.md
+```
+Scan: every checkbox line of the to-do list, grouped by marker, up to ~12, then "N more in the to-do list". <step> is howto.md's action line ("open <project> in Claude Code and say: …" or "say 'how do I …?'").

@@ -112,6 +112,5 @@ When the user says a project is inactive, not theirs, looked after by someone el
 When machine-scoped items are open, the report and its final message carry one copy-paste line, built only from the open items, for the OS that `changed` prints as `computer` (CONFIG `computer`, set at setup): macOS or Linux, "paste this into Terminal", e.g. `node -v; claude --version; python3 --version`; Windows, "paste this into PowerShell", e.g. `node -v; claude --version; py --version`. If a check's `match.machine` gives one command per OS, use that OS's command. When the user pastes the output back, compare each version with the item's fixed version in checks.json, set `status_machine` and the tracker row (done, or open with the exact upgrade command), and add a changelog line. Never ask for anything else from their machine.
 
 ## Lessons that shaped these rules
-- A run may have web search but no local files, or files but a restricted network. Deliver what can be done and say what couldn't.
 - npm `overrides` gotchas: one `>=` range can admit a vulnerable version when fixes ship per release line; frameworks that bundle a package (Next.js bundles `react-server-dom-*`) ignore overrides for it.
 - Scheduled runs can't approve prompts, so git commits from a sandbox can stall. Keep history in changelog.md, or commit from the host yourself.

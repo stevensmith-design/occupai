@@ -40,21 +40,41 @@ class TestSetupRound7(unittest.TestCase):
         self.assertNotIn("a first run of each while you're there", read("docs", "setup", "claude-desktop.md"))
 
 
-class TestFinalMessageTemplate(unittest.TestCase):
-    def test_literal_template_for_both_modes(self):
-        run = read("prompts", "run.md")
-        finish = run.split("## 6. Finish")[1]
-        self.assertIn("Final message: copy this template. Nothing else: no paragraphs, no other file names.", finish)
-        template = finish.split("```\n")[1]
-        self.assertEqual(template.splitlines(), [
-            "N new items · X may affect your projects → see your to-do list (DATE-projects.md)",
-            "🔴 [ID] what — fix",
-            "Reports: briefings/DATE-news.md · briefings/DATE-projects.md",
+class TestFinalMessageTemplates(unittest.TestCase):
+    def setUp(self):
+        self.finish = read("prompts", "run.md").split("## 6. Finish")[1]
+        self.blocks = [b.splitlines() for b in self.finish.split("```\n")[1::2]]
+
+    def test_rules_for_both(self):
+        f = self.finish
+        self.assertIn("Final message: copy this mode's template. Nothing else: no paragraphs, no other file names.", f)
+        self.assertIn("If your tool can attach files in the chat (e.g. a file card), attach the report; otherwise give its path.", f)
+        self.assertEqual(len(self.blocks), 2)
+
+    def test_briefing_template(self):
+        self.assertEqual(self.blocks[0], [
+            "N new items · X may affect your projects → to-do list comes with the scan",
+            "🔴 [ID] headline (may affect: <project>)",
+            "🟠 [ID] headline",
+            "Report: briefings/DATE-news.md",
         ])
-        self.assertIn("Up to 3 marker lines, highest first.", finish)
-        self.assertIn("Scan: the Result line replaces line 1", finish)
-        self.assertIn('Scorecard off: "N new items".', finish)
-        self.assertNotIn("a count line (briefing:", run)
+        self.assertNotIn("fix", " ".join(self.blocks[0]).lower())
+        f = self.finish
+        self.assertIn("Briefing: news only, no actions or fixes; up to ~10 headlines, most urgent first;", f)
+        self.assertIn('"(may affect: …)" only where the quick match matched a project.', f)
+        self.assertIn('Scorecard off: line 1 is "N new items", no "(may affect)".', f)
+
+    def test_scan_template(self):
+        self.assertEqual(self.blocks[1], [
+            "<Result line>",
+            '🔴 [ID] <project or "your computer">: action — Fix: <step>',
+            "<check-on-your-computer line, if machine items are open>",
+            "To-do list: briefings/DATE-projects.md",
+        ])
+        f = self.finish
+        self.assertIn('Scan: every checkbox line of the to-do list, grouped by marker, up to ~12, then "N more in the to-do list".', f)
+        self.assertIn("<step> is howto.md's action line (\"open <project> in Claude Code and say: …\" or \"say 'how do I …?'\")", f)
+        self.assertNotIn("Reports: briefings/DATE-news.md · briefings/DATE-projects.md", f)
 
 
 if __name__ == "__main__":

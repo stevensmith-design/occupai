@@ -27,8 +27,9 @@ from occupai_scan import tracker as trk  # noqa: E402
 DEMO_CHECKS = os.path.join(REPO, "examples", "demo", "library", "checks.json")
 # Total agent-facing words: round 3 total (4599) plus ~150 for the second task (round 3b) plus ~120 for round 4's
 # release fixes (folder-access wording, folder list, no helper task, news summary, accuracy line) plus ~110 for
-# round 5 (kit access, overlap guard, scorecard switch); SETUP.md under 950.
-WORD_BUDGET = 4985
+# round 5 (kit access, overlap guard, scorecard switch) plus ~65 for round 7's two final-message templates
+# (raised from 4985 rather than cut real rules); SETUP.md under 950.
+WORD_BUDGET = 5050
 SETUP_BUDGET = 950
 AGENT_FILES = [os.path.join("prompts", "run.md"), os.path.join("prompts", "howto.md"), "SETUP.md"]
 
