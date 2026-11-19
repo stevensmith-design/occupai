@@ -6,7 +6,7 @@
 
 **A daily security check-in for people who build with AI.** v0.1, a side project.
 
-Made by Steven Smith. More on OccupAI and my other work: [stevensmith.dev/occupai](https://stevensmith.dev/occupai)
+Made by Steven Smith. More on OccupAI and my other work: [stevensmith.dev/occupai](https://stevensmith.dev/occupai?utm_source=github&utm_campaign=occupai)
 
 I build a lot of small projects with AI coding agents, and I wanted something that tells me each morning what's new in security that touches my stack, checks whether any of it is in my projects, and remembers what I've already dealt with. OccupAI is that, packaged so you can run it too: a few agent automations (prompts, a read-only Python script and two skills) for Claude Desktop, Claude Code, Codex or a similar agent. It isn't a security product or a scanner, and it doesn't replace one. An AI does the research, so it can miss things. Everything it does to your projects is read-only, and you stay in charge of every fix.
 
