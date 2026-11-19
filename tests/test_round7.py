@@ -36,7 +36,7 @@ class TestSetupRound7(unittest.TestCase):
     def test_readme_and_guide_match(self):
         readme = read("README.md")
         self.assertNotIn("runs each once while you're there", readme)
-        self.assertIn("asks whether to run the first check now", readme)
+        self.assertIn("You start each task once yourself to approve its access", readme)
         self.assertNotIn("a first run of each while you're there", read("docs", "setup", "claude-desktop.md"))
 
 
