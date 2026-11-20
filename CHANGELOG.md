@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- **Briefing accuracy (issue 23):** attribution (country, group), victim and impact numbers, "actively exploited" and "malicious" are stated only as the fetched source states them. Before saving the news brief, each 🔴 and 🟠 item's headline and fix line is checked against its source and corrected or removed; a 🔴 item that calls a package malicious re-opens its primary source once ("not re-confirmed" if it can't). The brief adds "Verified: N items checked against sources, M corrected" under "Sources checked". Paid for by cutting rules `howto.md` repeated from `run.md`.
 - README: links to stevensmith.dev carry `utm_source=github` and the repo name, so visits from the repo can be counted.
 - **README:** a "Made by" line linking to stevensmith.dev/occupai; a trimmed excerpt of the `make demo` to-do list under the pictures; Quick start step 3 cut to two sentences (SETUP.md keeps the detail); `mark <ID> done` in backticks, because GitHub dropped `<ID>` as an HTML tag.
 - **Setup, from fresh-install test 3:** both tasks get exactly the folders approved in step 3 (the projects folder, plus the kit if it's outside it), never individual projects, which left every folder showing "needs approval". The agent no longer starts the tasks (agents can't use "Run now"): setup ends by asking whether to run the first check now and tells the user how to start the briefing, then the scan. Setup no longer waits on the briefing marker itself; the scan prompt already handles overlap.

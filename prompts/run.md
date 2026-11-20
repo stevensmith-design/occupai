@@ -29,10 +29,13 @@ Check **every group** in `news_sources`:
 Per new item, or tracker item with a material change (REOPENED or UPDATED, saying what changed):
 - **ID**: the CVE or a stable lowercase slug. Reuse the tracker ID for known items.
 - **What happened** in two sentences, and one verbatim quote under 15 words from a page fetched in this run, with source and date (or "no quote: page not fetched").
+- **Claims match the source:** attribution (country, group), victim and impact numbers, "actively exploited" and "malicious" only as the fetched source states them. If it doesn't say it, leave it out or write "the source doesn't attribute it".
 - **Priority** with a reason: CRITICAL (actively exploited, mass compromise, malware in a popular package), HIGH (serious, fix available, likely exploited), MEDIUM / LOW.
 - **Touches my stack?** yes / no / maybe, judged against stack.md (any listed tech), naming the projects. Before the first full run, use `stack` in CONFIG.
 - **What to do:** exact commands, fixed versions, indicators and what to rotate. Defang every IOC.
 - **Fixed version not found:** mark the check `unknown` and say so; never a rule matching every version. A framework that bundles vulnerable code with no confirmed fix gets one plain line: "<framework> X.Y fixes <other issue>; <CVE> may still apply until <framework> ships a fix", so two items never seem to contradict.
+
+**Verify before saving the news brief:** check each 🔴 and 🟠 item's headline and fix line against its source (versions, package names, attribution, numbers, exploited status, dates); change anything unsupported to match the source, or remove it. A 🔴 item calling a package or release malicious: re-open its primary source once to confirm names and versions; if it can't be fetched, write "not re-confirmed" in the item.
 
 **Quick match (briefing):** `SCAN match --ids <today's new and updated check IDs> --out <STORAGE>/state/match-briefing.json`. Matches become tracker actions (step 4), never a second action list.
 
@@ -84,6 +87,7 @@ Markers in both: 🔴 CRITICAL — do today / 🟠 HIGH — this week / 🟡 MED
 ### 🔴 CRITICAL (then 🟠 / 🟡 / ⚪)
 - [ID] what it is — why it matters — general fix (source link)
 Sources checked: one line per group (newest post date seen), honestly.
+Verified: N items checked against sources, M corrected.
 ```
 It never asks the user to act. Only if `news_scorecard` is on (default): affected items end with "→ see your to-do list", and the brief ends with "N of your projects may be affected — see your project report." Off: nothing hints at which items affect the user.
 

@@ -60,16 +60,11 @@ On "try again": ask for the access again if needed, then redo only the steps tha
 - **Use `--out STORAGE/state/<step>-out.json`:** the full JSON goes there and only a summary is printed. Open it only for details you need.
 - **Keep files small.** Full runs move rows closed for 30+ days to `actioned-archive.md` (never delete); one that becomes relevant again moves back as REOPENED.
 
-## Quality guards
-- **Never skip a source group or a project to save tokens.** Say exactly what wasn't covered.
-- **Quotes are verbatim**, never from memory or a search snippet.
-
 ## The tracker (`STORAGE/actioned.md`)
 Columns: `| ID | Item | First reported | Status | Updated | Note |`. One row per item, a stable ID (the CVE, or a lowercase slug).
 
 Statuses: `open`, `done`, `not-affected`, `snoozed until YYYY-MM-DD`, `watching`, `REOPENED`.
 - Only the user sets `snoozed` and `watching`. A snoozed row returns to open on its date.
-- **The news step never closes anything.** It adds open rows and reopens rows.
 - **REOPENED** only for a material change after the user acted: new IOCs or a new attack variant, exploitation started, the scope widened to the user's stack, a fix turned out incomplete, or a new project brought the issue back. Say what changed.
 - **The project checks may auto-close** with clear-cut evidence:
   - `not-affected`: the item can't touch any scanned project (no lockfile has the package, the affected tech isn't used, all affected versions are absent).
@@ -99,11 +94,9 @@ Statuses: `open`, `done`, `not-affected`, `snoozed until YYYY-MM-DD`, `watching`
 
 Severity: a key in tracked code or a sensitive file tracked or in history = HIGH (say "check whether this repo is public" when it has a GitHub remote; don't call the API). Sensitive file present but not gitignored = MEDIUM.
 
-Tracker rows: `hygiene-<check>-<project>` for HIGH and MEDIUM only (LOW and INFO as counts). **A secret that was ever committed stays open until the user confirms they rotated it.**
-
 Fix guidance for secrets: rotate first, then `git rm --cached <file>` and gitignore it. For history, point to `git filter-repo` or BFG, and say rotation matters more than rewriting history.
 
-**Ownership:** findings in repos whose GitHub origin owner isn't in `my_owners` go under "Third-party clones" as info, not into the action list. Owners the script can't classify (`owner_unconfirmed`) are listed for the user to confirm and add to CONFIG.
+**Ownership:** repos whose GitHub origin owner isn't in `my_owners` are third-party clones: info only, no actions.
 
 ## Your decisions about projects
 When the user says a project is inactive, not theirs, looked after by someone else, or not to be touched, record it once: `SCAN project <name> inactive|not-mine|managed|skip|active [--note "..."]` (`<project>/<folder>` quiets that folder's dependency findings). Every command applies it: `skip` projects are never read; the others are still checked but listed only under `silenced` (no actions, no tracker rows, not in stack.md). `inactive` needs `--not-deployed`: ask "Is <project> still deployed anywhere?" first; a deployed app is still exposed, so it stays active. When the user changes `exclusions`, say "The next full run re-checks every project and can take 10–20 minutes".
