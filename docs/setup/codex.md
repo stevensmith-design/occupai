@@ -12,7 +12,7 @@ Codex reads `AGENTS.md` and supports skills in the open Agent Skills format, so 
 
 ## 1. Install (once)
 ```
-git clone <this repo> ~/code/occupai
+git clone https://github.com/stevensmith-design/occupai.git ~/code/occupai
 mkdir -p ~/.occupai/{briefings,library,state}
 [ -e ~/.occupai/occupai.config.yaml ] || cp ~/code/occupai/occupai.config.example.yaml ~/.occupai/occupai.config.yaml   # then edit it
 cp ~/code/occupai/templates/actioned.md ~/.occupai/
