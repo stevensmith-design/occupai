@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- **Unaudited ecosystems are named (#19):** the audit lists every Dart, Ruby, Go, Rust, CocoaPods, PHP, Swift, Gradle, .NET or Elixir lockfile (or manifest, when there's no lockfile) as `not_covered`, per folder, so a project that uses one is never reported as fully checked. The scan puts them under "Not checked" (e.g. "Dart: not audited").
 - **A project the task can't read is never "unchanged" (#2):** a project folder that is empty or can't be listed here (a folder not attached to the task can look like that) is `not_reachable` in `changed`, and hygiene, the audit and news matching report it as not checked instead of clean. The scan lists it under "Not checked" with "attach the projects folder to both tasks". Scanner version 0.1.8: saved results are re-checked once.
 - **Release placeholders filled:** the checks schema `$id` points to the raw file on GitHub, and the Codex guide clones from github.com/stevensmith-design/occupai.
 - **CI:** runs on `ubuntu-24.04`, because `ubuntu-latest` moved to 26.04 without Python 3.9 and every run failed; `fail-fast: false`, so one failing Python version no longer cancels the others.

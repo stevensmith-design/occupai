@@ -108,5 +108,52 @@ class TestNotReachable(unittest.TestCase):
                       ' this task: attach the projects folder to both tasks".', read("prompts", "run.md"))
 
 
+class TestUnauditedEcosystems(unittest.TestCase):
+    """#19: a project using an ecosystem the audit doesn't cover is never "ok": each lockfile (or manifest
+    without one) is listed as not covered, per folder."""
+
+    def setUp(self):
+        self.tmp = realtmp("occupai-eco-")
+        self.root = os.path.join(self.tmp, "projects")
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def audit(self, unit, files):
+        for f in files:
+            write(os.path.join(self.root, unit, f), "x\n")
+        return deps.run_audit(Policy(self.root), unit)
+
+    def test_flutter_project_lists_dart_and_cocoapods(self):
+        r = self.audit("flut", ["pubspec.yaml", "pubspec.lock", "ios/Podfile", "ios/Podfile.lock",
+                                "android/build.gradle.kts"])
+        self.assertEqual(r["status"], "incomplete")
+        self.assertEqual(sorted(r["not_covered"]), ["flut/android/build.gradle.kts: not-audited (Gradle)",
+                                                    "flut/ios/Podfile.lock: not-audited (CocoaPods)",
+                                                    "flut/pubspec.lock: not-audited (Dart)"])
+
+    def test_manifest_without_lockfile_is_listed(self):
+        for unit, f, eco in (("rb", "Gemfile", "Ruby"), ("go", "go.mod", "Go"), ("rs", "Cargo.toml", "Rust"),
+                             ("php", "composer.json", "PHP"), ("sw", "Package.swift", "Swift")):
+            with self.subTest(eco=eco):
+                r = self.audit(unit, [f])
+                self.assertEqual(r["not_covered"], [f"{unit}/{f}: not-audited ({eco})"])
+                self.assertEqual(r["status"], "incomplete")
+
+    def test_plain_folder_stays_ok(self):
+        self.assertEqual(self.audit("docs", ["readme.md"])["status"], "ok")
+
+    def test_ecosystem_files_are_audit_inputs(self):
+        self.audit("go", ["go.mod"])
+        pol = Policy(self.root)
+        before = deps.audit_inputs(pol, "go")
+        write(os.path.join(self.root, "go", "go.sum"), "y\n")
+        self.assertNotEqual(before, deps.audit_inputs(pol, "go"))  # a new lockfile re-runs the audit
+
+    def test_prompt_lists_not_covered(self):
+        self.assertIn('with their `skipped` reasons, `not_covered` files (e.g. "Dart: not audited")',
+                      read("prompts", "run.md"))
+
+
 if __name__ == "__main__":
     unittest.main()

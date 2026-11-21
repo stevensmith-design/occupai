@@ -59,7 +59,7 @@ SCAN save-state --hygiene $ST/hygiene-out.json --audit $ST/audit-out.json
 ```
 Projects in `not_saved_inputs_changed` are re-checked next run.
 
-**What "clean" means.** Only `ok` (hygiene), `not-affected` (match) and `"status": "complete"` mean checked, nothing found. `incomplete`, `error` and `unknown` are "not fully checked": never report them as clean or close rows on them. List them under "Not checked" with their `skipped` reasons and any `omitted` folders (for depth-limit, name `cut_at`). `carried_findings` and `carried_unverified` still stand.
+**What "clean" means.** Only `ok` (hygiene), `not-affected` (match) and `"status": "complete"` mean checked, nothing found. `incomplete`, `error` and `unknown` are "not fully checked": never report them as clean or close rows on them. List them under "Not checked" with their `skipped` reasons, `not_covered` files (e.g. "Dart: not audited") and any `omitted` folders (for depth-limit, name `cut_at`). `carried_findings` and `carried_unverified` still stand.
 
 Reading the results:
 - **News matches** (`match-out.json`): affected projects with evidence. A rule the script can't express is `unknown`, under "Not checked": never ad-hoc shell commands.

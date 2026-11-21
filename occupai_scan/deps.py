@@ -27,6 +27,26 @@ USER_AGENT = "occupai-scan (read-only security check)"
 DEFAULT_NPM_REGISTRY = "https://registry.npmjs.org/"
 UNSUPPORTED_LOCKS = ("pnpm-lock.yaml", "yarn.lock", "bun.lock", "bun.lockb")
 UNSUPPORTED_PY = ("poetry.lock", "uv.lock", "Pipfile.lock")
+# Ecosystems the audit doesn't cover: (lockfile, manifest) -> name. A project using one is never "ok":
+# each folder's lockfile (or its manifest, when there's no lockfile) is listed as not covered.
+OTHER_ECOSYSTEMS = {"Dart": ("pubspec.lock", "pubspec.yaml"), "Ruby": ("Gemfile.lock", "Gemfile"),
+                    "Go": ("go.sum", "go.mod"), "Rust": ("Cargo.lock", "Cargo.toml"),
+                    "CocoaPods": ("Podfile.lock", "Podfile"), "PHP": ("composer.lock", "composer.json"),
+                    "Swift": ("Package.resolved", "Package.swift"),
+                    "Gradle": ("gradle.lockfile", "build.gradle", "build.gradle.kts"),
+                    ".NET": ("packages.lock.json",), "Elixir": ("mix.lock", "mix.exs")}
+OTHER_FILES = {f for names in OTHER_ECOSYSTEMS.values() for f in names}
+
+
+def other_ecosystems(rel_dir, fns):
+    """'<folder>/<file>: not-audited (<ecosystem>)' per unaudited ecosystem in one folder: its lockfile,
+    or else its first manifest found."""
+    out = []
+    for eco, names in OTHER_ECOSYSTEMS.items():
+        f = next((n for n in names if n in fns), None)
+        if f:
+            out.append(f"{rel_dir}/{f}: not-audited ({eco})")
+    return out
 
 
 # ------------------------------------------------------------------ lockfile reading
@@ -410,7 +430,8 @@ def run_audit(pol, unit, registry=DEFAULT_NPM_REGISTRY, opener=None):
     cov = Coverage()
     if pol.unit_gap(unit):
         cov.skip(unit, pol.unit_gap(unit))
-    interesting = set(LOCKFILES) | {"package.json", "bun.lockb"} | set(UNSUPPORTED_PY) | set(PY_MANIFESTS)
+    interesting = set(LOCKFILES) | {"package.json", "bun.lockb"} | set(UNSUPPORTED_PY) | \
+        set(PY_MANIFESTS) | OTHER_FILES
     reqs, manifests, pkg_dirs, lock_dirs = [], [], [], []
 
     def wanted(a):
@@ -443,6 +464,7 @@ def run_audit(pol, unit, registry=DEFAULT_NPM_REGISTRY, opener=None):
                 r["pypi"][f"{rel_dir}/{f}"] = guarded(pypi_audit, pol, os.path.join(dp, f), opener)
             elif f in UNSUPPORTED_PY:
                 r["not_covered"].append(f"{rel_dir}/{f}")
+        r["not_covered"] += other_ecosystems(rel_dir, fns)
     # Dependencies the audit can't see are "not covered", never an empty clean result.
     for dp in pkg_dirs:
         if not any(dp == d or dp.startswith(d + os.sep) for d in lock_dirs):
@@ -464,7 +486,7 @@ def run_audit(pol, unit, registry=DEFAULT_NPM_REGISTRY, opener=None):
     return r
 
 
-AUDIT_INPUTS = set(LOCKFILES) | {"package.json", "bun.lockb"} | set(UNSUPPORTED_PY)
+AUDIT_INPUTS = set(LOCKFILES) | {"package.json", "bun.lockb"} | set(UNSUPPORTED_PY) | OTHER_FILES
 
 
 def audit_inputs(pol, unit):
