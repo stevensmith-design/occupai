@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- **A project the task can't read is never "unchanged" (#2):** a project folder that is empty or can't be listed here (a folder not attached to the task can look like that) is `not_reachable` in `changed`, and hygiene, the audit and news matching report it as not checked instead of clean. The scan lists it under "Not checked" with "attach the projects folder to both tasks". Scanner version 0.1.8: saved results are re-checked once.
 - **Release placeholders filled:** the checks schema `$id` points to the raw file on GitHub, and the Codex guide clones from github.com/stevensmith-design/occupai.
 - **CI:** runs on `ubuntu-24.04`, because `ubuntu-latest` moved to 26.04 without Python 3.9 and every run failed; `fail-fast: false`, so one failing Python version no longer cancels the others.
 - **Briefing accuracy (issue 23):** attribution (country, group), victim and impact numbers, "actively exploited" and "malicious" are stated only as the fetched source states them. Before saving the news brief, each 🔴 and 🟠 item's headline and fix line is checked against its source and corrected or removed; a 🔴 item that calls a package malicious re-opens its primary source once ("not re-confirmed" if it can't). The brief adds "Verified: N items checked against sources, M corrected" under "Sources checked". Paid for by cutting rules `howto.md` repeated from `run.md`.

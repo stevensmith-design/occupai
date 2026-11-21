@@ -373,6 +373,12 @@ def run_hygiene(pol, unit, my_owners=()):
             r[k] = {"status": "error", "error": f"unit-refused:{e.reason}", "findings": [], "skipped": []}
         except Exception as e:  # noqa: BLE001  never let one project break the run
             r[k] = {"status": "error", "error": f"exception:{type(e).__name__}", "findings": [], "skipped": []}
+    gap = pol.unit_gap(unit)
+    if gap:
+        for k in CHECKS:
+            if isinstance(r.get(k), dict):
+                r[k] = {**r[k], "status": "incomplete" if r[k].get("status") == "ok" else r[k].get("status"),
+                        "skipped": list(r[k].get("skipped") or []) + [{"file": unit, "reason": gap}]}
     try:
         r["stack"] = {"uses": detect(pol, unit)}  # not a check: never makes a result incomplete
     except Exception:  # noqa: BLE001

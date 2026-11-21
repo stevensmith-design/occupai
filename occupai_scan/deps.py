@@ -408,6 +408,8 @@ def run_audit(pol, unit, registry=DEFAULT_NPM_REGISTRY, opener=None):
     pol = pol.for_unit(unit)
     r = {"npm": {}, "pypi": {}, "not_covered": [], "skipped": []}
     cov = Coverage()
+    if pol.unit_gap(unit):
+        cov.skip(unit, pol.unit_gap(unit))
     interesting = set(LOCKFILES) | {"package.json", "bun.lockb"} | set(UNSUPPORTED_PY) | set(PY_MANIFESTS)
     reqs, manifests, pkg_dirs, lock_dirs = [], [], [], []
 

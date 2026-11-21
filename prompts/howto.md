@@ -71,7 +71,6 @@ Statuses: `open`, `done`, `not-affected`, `snoozed until YYYY-MM-DD`, `watching`
   - `done`: it affected a project before and every affected project now shows the fix.
   - Note format: `auto: <briefing|daily|full> run YYYY-MM-DD — <evidence in one line>`.
 - **Notes keep the user's text.** An automated note (`auto: …`, `UPDATED DATE: …`, `REOPENED DATE: …`) replaces only the previous automated part; everything else in the Note stays, joined with ` · `.
-- **Never auto-close:** anything that depends on a machine-only check (`node -v`, `claude --version`), GitHub-side or account state, a manual action (rotating a secret), or a partial scan. Never touch rows that are snoozed or watching, or rows the user set by hand (any `user:` part in the Note, even after later updates), except to add findings.
 - Never delete rows. Every status change the scan makes goes in the report's "Tracker updates" table, so the user can reverse it.
 - The user changes a status by editing the file or by telling the agent (`/occupai mark <ID> <status>`, which runs `SCAN tracker mark <ID> <status>` and writes a `user:` note).
 

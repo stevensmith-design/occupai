@@ -221,6 +221,18 @@ class Policy:
             raise PathRefused("invalid-unit")
         return self.check_dir(unit)
 
+    def unit_gap(self, unit):
+        """'empty-folder' or 'unreadable' when a project folder shows nothing here (a folder that isn't
+        attached to the task can look empty), else None. Readers then report the project as not checked,
+        never clean, and `changed` never calls it unchanged."""
+        try:
+            names = os.listdir(self.unit_path(unit))
+        except PathRefused:
+            return None  # each reader reports the refusal itself
+        except OSError:
+            return "unreadable"
+        return None if any(n != ".DS_Store" for n in names) else "empty-folder"
+
     # ---------------------------------------------------------------- reads
     def read_bytes(self, path, limit=MAX_TEXT, cov=None):
         """File bytes, or None (and a Coverage note) if the policy refuses it or it can't be read."""

@@ -248,12 +248,15 @@ def _main(argv=None):
     elif a.cmd == "discover":
         return cmd_discover(pol, units, omitted, skipped, silenced, exclude, cfg)
     elif a.cmd == "changed":
+        gaps = {u: g for u in units if (g := pol.unit_gap(u))}
+        seen = [u for u in units if u not in gaps]  # an empty or unreadable folder is never "unchanged"
         cur = {u: fingerprint(pol, u)["fp"] for u in units}
         out({"last_saved": state.get("saved_at"),
              "cache_valid": state.get("script_version") == SCRIPT_VERSION if state else None,
-             "new": [u for u in units if u not in prev],
-             "changed": [u for u in units if u in prev and prev[u].get("fp") != cur[u]],
-             "unchanged": [u for u in units if u in prev and prev[u].get("fp") == cur[u]],
+             "new": [u for u in seen if u not in prev],
+             "changed": [u for u in seen if u in prev and prev[u].get("fp") != cur[u]],
+             "unchanged": [u for u in seen if u in prev and prev[u].get("fp") == cur[u]],
+             "not_reachable": gaps,
              "removed": [u for u in prev if u not in cur and u not in skipped],
              "omitted": omitted, "computer": computer(cfg), **_choices(statuses)})
     elif a.cmd == "hygiene":

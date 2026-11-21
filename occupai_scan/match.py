@@ -173,6 +173,8 @@ def match_check(pol, unit, check, cov=None):
     cov = cov if cov is not None else Coverage()
     pol = pol.for_unit(unit)
     p = pol.unit_root
+    if pol.unit_gap(unit):
+        cov.skip(unit, pol.unit_gap(unit))
     rules = check.get("match") or {}
     if not isinstance(rules, dict):
         cov.skip("rule:match", "unsupported-rule")
