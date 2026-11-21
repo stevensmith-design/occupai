@@ -108,7 +108,7 @@ Tracker updates: | ID | Project | Old → new | Evidence | — say "reopen <ID>"
 ## Appendix
 Per item: what happened · "quote" — source, date; affected and fixed versions; evidence; full audit lists.
 ```
-In each group: news matches (including the briefing's quick-match rows in the tracker), then project findings (dependencies, secrets, workflows, agent settings, database rules, keys outside projects), then older open items. An action that fits two places appears once, in the first. On daily scans, add "Full refresh and audit: last full run <date>". Third-party clones and silenced projects: one info line each, in the appendix. Items the user marked done since the last report appear once, ticked, then drop off. **Quiet day:** if nothing is new, reopened or changed: the title, the Covers line, "Nothing new · K still open", and the last three sections. Then stop.
+An item first reported today is (NEW); "still open since" is only for an earlier date. In each group: news matches (including the briefing's quick-match rows in the tracker), then project findings (dependencies, secrets, workflows, agent settings, database rules, keys outside projects), then older open items. An action that fits two places appears once, in the first. On daily scans, add "Full refresh and audit: last full run <date>". Third-party clones and silenced projects: one info line each, in the appendix. Items the user marked done since the last report appear once, ticked, then drop off. **Quiet day:** if nothing is new, reopened or changed: the title, the Covers line, "Nothing new · K still open", and the last three sections. Then stop.
 
 ## 6. Finish
 - Save both reports, tracker and library. If STORAGE can't be written, deliver them in your final message and say so.

@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- **First-day items say (NEW) (#20):** an item first reported in today's run is marked (NEW) in the to-do list; "(still open since <date>)" is only for items first reported on an earlier day.
 - **Build output is skipped everywhere (#18):** Xcode `SourcePackages` and `DerivedData`, SwiftPM `.build`, `.gradle`, `.svelte-kit`, `.nuxt` and `.output` join the folders that are never read (`build`, `dist`, `.next`, `out`, `Pods`, `target` already were). A Flutter app's iOS build can copy SDK example lockfiles into them, which inflated audit counts. The audit lists the generated folders it skipped (`generated_skipped`), and the scan names them in one line under "Not checked".
 - **Unaudited ecosystems are named (#19):** the audit lists every Dart, Ruby, Go, Rust, CocoaPods, PHP, Swift, Gradle, .NET or Elixir lockfile (or manifest, when there's no lockfile) as `not_covered`, per folder, so a project that uses one is never reported as fully checked. The scan puts them under "Not checked" (e.g. "Dart: not audited").
 - **A project the task can't read is never "unchanged" (#2):** a project folder that is empty or can't be listed here (a folder not attached to the task can look like that) is `not_reachable` in `changed`, and hygiene, the audit and news matching report it as not checked instead of clean. The scan lists it under "Not checked" with "attach the projects folder to both tasks". Scanner version 0.1.8: saved results are re-checked once.

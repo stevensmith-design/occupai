@@ -192,5 +192,16 @@ class TestGeneratedFolders(unittest.TestCase):
                       read("prompts", "run.md"))
 
 
+class TestFirstDayLabel(unittest.TestCase):
+    """#20: an item opened today says (NEW), never "(still open since <today>)"."""
+
+    def test_rule_sits_with_the_to_do_template(self):
+        run = read("prompts", "run.md")
+        projects = run.split("**`STORAGE/briefings/YYYY-MM-DD-projects.md`**")[1].split("## 6.")[0]
+        rule = 'An item first reported today is (NEW); "still open since" is only for an earlier date.'
+        self.assertIn(rule, projects)
+        self.assertLess(projects.index("(still open since YYYY-MM-DD)"), projects.index(rule))
+
+
 if __name__ == "__main__":
     unittest.main()
