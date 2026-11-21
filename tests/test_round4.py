@@ -88,8 +88,7 @@ class TestDocsMatchWhatExists(unittest.TestCase):
         self.assertNotIn(gone, readme.lower().replace("dependabot, snyk or " + gone + "-scanner", ""))
 
     def test_tested_vs_untested(self):
-        readme = read("README.md")
-        self.assertIn("tested end to end on one Mac", readme)
+        # The README stays tool-neutral (no per-tool status); each guide carries its own status line.
         for guide in ("claude-code.md", "codex.md", "generic.md"):
             self.assertRegex(read("docs", "setup", guide), r"(?i)untested", guide)
 

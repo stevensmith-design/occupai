@@ -8,9 +8,15 @@
 
 Made by Steven Smith. More on OccupAI and my other work: [stevensmith.dev/occupai](https://stevensmith.dev/occupai?utm_source=github&utm_campaign=occupai)
 
-I build a lot of small projects with AI coding agents, and I wanted something that tells me each morning what's new in security that touches my stack, checks whether any of it is in my projects, and remembers what I've already dealt with. OccupAI is that, packaged so you can run it too: a few agent automations (prompts, a read-only Python script and two skills) for Claude Desktop, Claude Code, Codex or a similar agent. It isn't a security product or a scanner, and it doesn't replace one. An AI does the research, so it can miss things. Everything it does to your projects is read-only, and you stay in charge of every fix.
+I build a lot of small projects with AI coding agents, and I wanted something that tells me each morning what's new in security that touches my stack, checks whether any of it is in my projects, and remembers what I've already dealt with. OccupAI is that, packaged so you can run it too: a few agent automations (prompts, a read-only Python script and two skills) for the AI agent you already use. Everything it does to your projects is read-only, and you stay in charge of every fix.
 
-**Covers secrets, AI agent setups, GitHub Actions, npm and Python dependencies, and Supabase/Firebase rules. More ecosystems later.**
+**Covers secrets, AI agent setups, GitHub Actions, npm and Python dependencies, and Supabase/Firebase rules.**
+
+**Who it's for:**
+- **Solo builders and designers** shipping with AI coding agents: lots of small repos, no security team watching them.
+- **Small teams:** one daily news brief to share with everyone, and a private to-do list for each person's projects.
+- **"Does this affect me?"** When a package is hijacked overnight, you know by morning which projects use it and what to do.
+- **Every new project starts ahead:** past issues become checks and a baseline, so old mistakes don't come back.
 
 <table>
 <tr>
@@ -19,7 +25,7 @@ I build a lot of small projects with AI coding agents, and I wanted something th
 </tr>
 </table>
 
-<sub>These illustrate the summary line at the top of each report. The octopus doesn't appear in the reports yet (see the Roadmap).</sub>
+<sub>These illustrate the summary line at the top of each report. The octopus is coming to the reports soon (see the Roadmap).</sub>
 
 ### What a morning's to-do list looks like
 
@@ -51,19 +57,14 @@ In the full report, each line also ends with what to say to your AI tool to fix 
 ## Quick start
 
 1. **Download** this repo (green **Code** button → **Download ZIP**, then unzip it) or `git clone` it. Keep the folder where it is afterwards: the daily tasks run from it.
-2. **Open the folder** in your AI tool. In Claude Desktop: start a new chat, click **+** → **Add folder** and pick the occupai folder. (Claude Code or Codex: start it in that folder.)
+2. **Open the folder** in your AI tool. In Claude Desktop: start a new chat, click **+** → **Add folder** and pick the occupai folder. (In a terminal-based agent: start it in that folder.)
 3. **Say "Set up OccupAI".** It checks you have Python 3.9 or newer, asks three questions (your projects folder, a time, notifications), shows the projects it will watch, then sets up two daily tasks: a briefing and, 20 minutes later, a scan. You start each task once yourself to approve its access. The full walkthrough is in [SETUP.md](SETUP.md). The first scan checks every project and can take 10–20 minutes.
 
 **What you get each day:** the briefing writes a short news brief you can share with your team (`DATE-news.md`, no project names or findings), and the scan writes your private to-do list (`DATE-projects.md`, one checkbox line per action, 🔴/🟠/🟡/⚪). The chat message is a count line, up to three actions and the two file names.
 
 Everything runs on your computer by default, and everything it keeps is in the kit's `data/` folder (gitignored). Keep that folder when you update the kit: `git pull`, or copy `data/` across to the new copy.
 
-| Tool | Guide | Status |
-|---|---|---|
-| Claude Desktop | [docs/setup/claude-desktop.md](docs/setup/claude-desktop.md): two local scheduled tasks, created from the chat | the primary path; tested end to end on one Mac (setup, both tasks, both reports) |
-| Claude Code | [docs/setup/claude-code.md](docs/setup/claude-code.md): skills, `claude -p`, cron or launchd | untested |
-| Codex | [docs/setup/codex.md](docs/setup/codex.md): scheduled tasks or cron + `codex exec` | untested |
-| Other agents | [docs/setup/generic.md](docs/setup/generic.md): cron + your agent's CLI | untested |
+**Setup guides:** step-by-step guides for scheduling and running OccupAI are in [docs/setup/](docs/setup/).
 
 **Mark something handled:** open the OccupAI folder in your AI tool and say `mark <ID> done` (or edit `data/actioned.md`).
 **Your stack and news sources:** after the first full run, relevance comes from what your projects actually use (`data/library/stack.md`). `news_sources` in the config is an example list to edit.
@@ -114,13 +115,13 @@ STORAGE (KIT/data)     actioned.md · library/ (checks.json, baseline.md) · sta
 | Database rules | Supabase tables without row level security (in Supabase projects); Firebase rules open to everyone |
 | News items | whatever the briefing finds, replayed per project from `checks.json`: npm package ranges (comparators joined by spaces, commas and `||`; lockfile v2/v3, pnpm, yarn, bun), pinned Python requirements, malicious names, runtime pins, files, git branches and commits. Ranges the script can't parse make a project `unknown`, never clean |
 
-## Limitations
+## Good to know
 - **An AI does the research.** It can miss an advisory, misjudge a priority or misread a page. The quote rule (verbatim, from a fetched page) and the "Sources checked" section make gaps visible, but don't remove them.
 - **Pattern-based secret checks miss unusual formats,** and a clean result doesn't mean there are no secrets.
 - **Limited coverage:** npm and Python only for the dependency audit (pnpm, yarn, bun, Poetry and uv lockfiles are listed as "not covered"); Supabase and Firebase only for database rules; Supabase migrations may not match your live database.
 - **It can't see** what's installed on your machine (it gives you a one-line command to run), GitHub-side state (forks, org settings, workflow history), or your cloud accounts.
 - **Local runs need your computer on.** Scheduled tasks skip or catch up when it's asleep, depending on the tool.
-- v0.1: the scan script, SETUP.md's steps and the demo are tested offline. Setup and both tasks were tested end to end in Claude Desktop on one Mac. The Claude Code, Codex and generic-agent guides are untested, and so is the advanced cloud-briefing storage.
+- v0.1: the scan script, SETUP.md's steps and the demo are covered by offline tests.
 
 ## FAQ
 
@@ -130,7 +131,7 @@ STORAGE (KIT/data)     actioned.md · library/ (checks.json, baseline.md) · sta
 
 **Why not just use Dependabot, Snyk or osv-scanner?** Use them. OccupAI is the daily layer around them: news that isn't an advisory yet (malware campaigns, compromised accounts), hygiene that dependency tools don't check (agent configs, workflows, committed `.env` files), and one tracker that remembers what you've handled.
 
-**What does it cost?** The kit is free (MIT). The agent runs use your own Claude, ChatGPT or other plan. The briefing does about 15–25 web fetches a day.
+**What does it cost?** The kit is free (MIT). The agent runs use your own AI plan. The briefing does about 15–25 web fetches a day.
 
 **Can I change the news sources or my stack?** Yes, and you should: the defaults are examples. Edit `news_sources` and `stack` in the config. Sources are grouped (campaigns and supply chain, official, stack vendors, news), and the briefing reports on every group.
 
