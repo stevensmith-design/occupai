@@ -593,6 +593,8 @@ def cmd_audit(a, pol, units, omitted, state, prev, registry, ckey, statuses, sub
     out({**_meta("audit", a, pol, units, ckey),
          "status": "complete" if not not_ok and not omitted else "incomplete",
          "summary": summary, "incomplete": not_ok, "omitted": omitted, "silenced": silenced,
+         "generated_skipped": {u: r["generated_skipped"] for u, r in views.items()
+                               if r.get("generated_skipped") and u not in quiet},
          **_choices(statuses, silenced_too=False), "results": res, "first_audit": first_audit,
          "new_since_last": "first-run" if not base else sorted(cur_keys - prev_keys),
          "fixed_since_last": [] if not base else sorted(k for k in prev_keys - cur_keys if ok(k)),

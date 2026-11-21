@@ -427,7 +427,7 @@ def run_audit(pol, unit, registry=DEFAULT_NPM_REGISTRY, opener=None):
     were skipped or are unsupported), error (nothing could be checked)."""
     pol = pol.for_unit(unit)
     r = {"npm": {}, "pypi": {}, "not_covered": [], "skipped": []}
-    cov = Coverage()
+    cov, gen = Coverage(), []
     if pol.unit_gap(unit):
         cov.skip(unit, pol.unit_gap(unit))
     interesting = set(LOCKFILES) | {"package.json", "bun.lockb"} | set(UNSUPPORTED_PY) | \
@@ -438,7 +438,7 @@ def run_audit(pol, unit, registry=DEFAULT_NPM_REGISTRY, opener=None):
         b = os.path.basename(a)
         return b in interesting or is_requirements(b)
 
-    for dp, dns, fns in pol.walk(unit, cov=cov, wanted=wanted):
+    for dp, dns, fns in pol.walk(unit, cov=cov, wanted=wanted, generated=gen):
         rel_dir = pol.rel(dp)
         reqs += [f"{rel_dir}/{f}" for f in fns if is_requirements(f)]
         manifests += [f"{rel_dir}/{f}" for f in fns if f in PY_MANIFESTS]
@@ -474,6 +474,8 @@ def run_audit(pol, unit, registry=DEFAULT_NPM_REGISTRY, opener=None):
                 r["not_covered"].append(f"{pol.rel(dp)}/package.json: no-lockfile")
     r["not_covered"] += [f"{m}: no-requirements-file" for m in uncovered_manifests(manifests, reqs)]
     r["skipped"] = cov.skipped
+    if gen:
+        r["generated_skipped"] = sorted(gen)  # build output and dependency copies: never audited, by design
     results = [x for k in ("npm", "pypi") for x in r[k].values()]
     ok = [x for x in results if x.get("status") == "ok"]
     if results and not ok and all(x.get("status") == "error" for x in results):

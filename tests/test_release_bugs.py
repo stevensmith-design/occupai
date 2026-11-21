@@ -155,5 +155,42 @@ class TestUnauditedEcosystems(unittest.TestCase):
                       read("prompts", "run.md"))
 
 
+class TestGeneratedFolders(unittest.TestCase):
+    """#18: build output and dependency checkouts (where a Flutter app's iOS build copies SDK example
+    lockfiles) are never audited or matched, and the audit names the folders it left out."""
+
+    def setUp(self):
+        self.tmp = realtmp("occupai-gen-")
+        self.root = os.path.join(self.tmp, "projects")
+        for d in ("build/ios/SourcePackages/checkouts/sdk/example", "ios/SourcePackages/checkouts/sdk/example",
+                  "ios/DerivedData/x", ".build/checkouts/y", "android/.gradle/z", "web"):
+            write(os.path.join(self.root, "flut", d, "package-lock.json"), LOCK)
+        self.pol = Policy(self.root)
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def test_only_the_real_lockfile_is_read(self):
+        self.assertEqual([self.pol.rel(p) for p in deps.lockfiles_in(self.pol, "flut")], ["flut/web/package-lock.json"])
+
+    def test_audit_names_the_skipped_folders(self):
+        shutil.rmtree(os.path.join(self.root, "flut", "web"))  # no npm call needed
+        r = deps.run_audit(self.pol, "flut")
+        self.assertEqual(r["npm"], {})
+        self.assertEqual(r["generated_skipped"], ["flut/.build", "flut/android/.gradle", "flut/build",
+                                                  "flut/ios/DerivedData", "flut/ios/SourcePackages"])
+        self.assertEqual(r["status"], "ok")  # skipped by design, not a gap
+
+    def test_news_match_ignores_build_copies(self):
+        shutil.rmtree(os.path.join(self.root, "flut", "web"))
+        check = {"id": "x", "title": "x", "scope": "project",
+                 "match": {"packages": [{"name": "left-pad", "affected": "<1.3.0"}]}}
+        self.assertEqual(run_match(self.pol, ["flut"], [check])["x"]["projects"]["flut"]["status"], "not-affected")
+
+    def test_prompt_names_them_under_not_checked(self):
+        self.assertIn('one line naming `generated_skipped` folders (build output, never audited) to "Not checked"',
+                      read("prompts", "run.md"))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -22,8 +22,12 @@ import re
 import stat
 
 IGNORE_MARKER = ".occupai-ignore"
-PRUNE = {"node_modules", ".next", "dist", "build", ".venv", "venv", "__pycache__", "Pods",
-         ".dart_tool", ".turbo", ".vercel", "coverage", ".git", ".cache", "out", "target"}
+# Generated folders: build output and dependency copies (Xcode/SwiftPM checkouts can hold other projects'
+# example lockfiles). Never read; the audit names the build-output ones it skipped (GENERATED).
+GENERATED = {".next", "dist", "build", "Pods", "out", "target", "SourcePackages", "DerivedData", ".build",
+             ".gradle", ".svelte-kit", ".nuxt", ".output"}
+PRUNE = GENERATED | {"node_modules", ".venv", "venv", "__pycache__", ".dart_tool", ".turbo", ".vercel", "coverage",
+                     ".git", ".cache"}
 
 # Sensitive files: NEVER opened. Metadata only (name, tracked, in history, gitignored).
 SENSITIVE_GLOBS = [".env", ".env.*", "*.pem", "*.key", "*.p12", "*.pfx", "*.jks", "*.keystore",
@@ -315,13 +319,14 @@ class Policy:
             return "outside-root"
 
     # ---------------------------------------------------------------- traversal
-    def walk(self, start, maxdepth=WALK_DEPTH, prune=True, on_symlink=None, cov=None, wanted=None):
+    def walk(self, start, maxdepth=WALK_DEPTH, prune=True, on_symlink=None, cov=None, wanted=None, generated=None):
         """os.walk inside the root that never follows symlinks and honours exclusions and ignore markers.
         Yields (dirpath, dirnames, filenames); refused symlinks are left out. With cov, nothing a reader
         wanted disappears silently: folders cut off by maxdepth ('depth-limit'), folders that can't be
         listed ('unreadable') and a refused start folder are recorded. With wanted(abs_path) as well,
         refused file symlinks the reader wants and folder symlinks that leave the scoped project (they
-        could hold anything) are recorded as 'symlink'. on_symlink(root_relative_path) is the older per-caller hook."""
+        could hold anything) are recorded as 'symlink'. on_symlink(root_relative_path) is the older per-caller hook.
+        generated (a list) collects the GENERATED folders left out."""
         try:
             top = self.check_dir(start)
         except PathRefused as e:
@@ -356,6 +361,9 @@ class Policy:
                         continue  # policy, not a gap
                     if (n in dns and not self._inside_unit(a)) or (n not in dns and wanted(a)):
                         cov.skip(self.rel(a), "symlink")
+            if generated is not None and prune:
+                generated += [self.rel(os.path.join(dp, d)) for d in dns
+                              if d in GENERATED and not os.path.islink(os.path.join(dp, d))]
             dns[:] = [d for d in dns if not (prune and d in PRUNE) and not os.path.islink(os.path.join(dp, d))
                       and not excluded(os.path.relpath(os.path.join(dp, d), self.root), self.patterns)]
             if dns and dp.count(os.sep) - base >= maxdepth:
