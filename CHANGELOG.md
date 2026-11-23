@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- **"Needs you" group:** in the to-do list and the scan's chat message, items the scan can't check itself (your computer, GitHub or other online accounts, live dashboards like Supabase) are grouped under "Needs you (outside what the scan can see)", after the project findings, which stay first and unlabelled. The section replaces "Check on your computer" and keeps its copy-paste line; Fix lines are unchanged.
 - **README troubleshooting:** what to do when no briefing or scan arrived (Claude pauses a task the computer was off or asleep for; switch it back on or run it now).
 - **Priority changes are explained:** an item or CVE reported earlier at another priority is marked UPDATED with the reason in a few words (e.g. "🔴 → 🟠: no exploitation reported; patch widely available"); with no reason, the earlier priority stays. Replaces "reuse each open item's priority".
 - **Every CVE of a multi-CVE issue is listed:** when a source names a set of CVEs for one issue (e.g. five nginx CVEs in one write-up), the briefing item lists all of them, each with its affected configuration in a few words, only as the source states them. Paid for by cutting text `run.md` and `howto.md` repeated from each other.

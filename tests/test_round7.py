@@ -67,12 +67,14 @@ class TestFinalMessageTemplates(unittest.TestCase):
     def test_scan_template(self):
         self.assertEqual(self.blocks[1], [
             "<Result line>",
-            '🔴 [ID] <project or "your computer">: action — Fix: <step>',
+            "🔴 [ID] <project>: action — Fix: <step>",
+            "Needs you (outside what the scan can see):",
+            "🟠 [ID] <your computer, account or dashboard>: action — Fix: <step>",
             "<check-on-your-computer line, if machine items are open>",
             "To-do list: briefings/DATE-projects.md",
         ])
         f = self.finish
-        self.assertIn('Scan: every checkbox line of the to-do list, grouped by marker, up to ~12, then "N more in the to-do list".', f)
+        self.assertIn('Scan: every checkbox line of the to-do list, grouped by marker, up to ~12, then "N more in the to-do list";', f)
         self.assertIn("<step> is howto.md's action line (\"open <project> in Claude Code and say: …\" or \"say 'how do I …?'\")", f)
         self.assertNotIn("Reports: briefings/DATE-news.md · briefings/DATE-projects.md", f)
 

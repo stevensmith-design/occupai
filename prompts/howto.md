@@ -56,7 +56,7 @@ On "try again": ask for the access again if needed, then redo only the steps tha
 - **Scripts do the work; you read summaries.** Check projects only through SCAN, never ad-hoc shell; what it doesn't cover is "not checked".
 - **Change-based hygiene:** `SCAN hygiene` re-checks only new or changed projects and reuses saved results for the rest. A project counts as changed when its git state or any file the checks read changes. A new script version or new exclusions re-check everything once; an incomplete last check is always redone.
 - **Dependency and news checks cover every project, changed or not.** A new advisory can affect an unchanged lockfile.
-- **Short shell calls:** each may run in a fresh sandbox with no background jobs. Long steps use `--resume STORAGE/state/<step>-progress.json --budget 100`. Never delete progress files.
+- **Short shell calls:** each may run in a fresh sandbox with no background jobs. Never delete progress files.
 - **Use `--out STORAGE/state/<step>-out.json`:** the full JSON goes there and only a summary is printed. Open it only for details you need.
 - **Keep files small.** Full runs move rows closed for 30+ days to `actioned-archive.md` (never delete); one that becomes relevant again moves back as REOPENED.
 
@@ -105,4 +105,3 @@ When machine-scoped items are open, the report and its final message carry one c
 
 ## Lessons that shaped these rules
 - npm `overrides` gotchas: one `>=` range can admit a vulnerable version when fixes ship per release line; frameworks that bundle a package (Next.js bundles `react-server-dom-*`) ignore overrides for it.
-- Scheduled runs can't approve prompts, so git commits from a sandbox can stall. Keep history in changelog.md, or commit from the host yourself.

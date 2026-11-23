@@ -64,7 +64,7 @@ Projects in `not_saved_inputs_changed` are re-checked next run.
 
 Reading the results:
 - **News matches** (`match-out.json`): affected projects with evidence. A rule the script can't express is `unknown`, under "Not checked": never ad-hoc shell commands.
-- **Hygiene:** before a first-time HIGH/CRITICAL finding, rule out false positives (placeholder, detector regex, public client config, fixture) without printing values. `keys_outside_projects`: one line each, naming files as files (not folders), "move to ~/.ssh or delete". Third-party clones go under "Third-party clones" as info; list `owner_unconfirmed` owners for the user to confirm. `silenced` projects: one line with counts.
+- **Hygiene:** before a first-time HIGH/CRITICAL finding, rule out false positives (placeholder, detector regex, public client config, fixture) without printing values. `keys_outside_projects`: one line each, naming files as files (not folders), "move to ~/.ssh or delete". Third-party clones go under "Third-party clones" as info; list `owner_unconfirmed` owners for the user to confirm.
 - **Audit:** per project only counts of packages with their **own** advisory by severity, and the top 3 fixes (the appendix holds the full list); `via_dependency_only` ones are fixed by fixing the dependency. With `mostly_in`, add "Most are in <folder>: say '<project>/<folder> is inactive' to quiet it". A lockfile with `error` is not covered, never "no vulnerabilities". Copy `route-check` notes and one line naming `generated_skipped` folders (build output, never audited) to "Not checked". `new_since_last` / `fixed_since_last` give the weekly delta.
 - **`not_reachable`** (from `changed`): under "Not checked", "<project> isn't readable from this task: attach the projects folder to both tasks".
 - **Unknown status:** a project with critical/high items and no decision in `your_decisions` gets one line: "Is <project> still active or deployed? Say '<project> is inactive' to quiet it."
@@ -100,7 +100,8 @@ It never asks the user to act. Only if `news_scorecard` is on (default): affecte
 ## To do
 ### 🔴 CRITICAL — do today (then 🟠 / 🟡 / ⚪)
 - [ ] [ID] <project>: action — why. <action line> (NEW) / (REOPENED) / (still open since YYYY-MM-DD)
-## Check on your computer
+## Needs you (outside what the scan can see)
+- [ ] [ID] <your computer, account or dashboard>: action — why. <action line>
 <`computer` from `changed`>: one copy-paste line from open machine-scoped items, "paste the output back to me".
 ## Not checked
 What, why, next step.
@@ -108,7 +109,7 @@ Tracker updates: | ID | Project | Old → new | Evidence | — say "reopen <ID>"
 ## Appendix
 Per item: what happened · "quote" — source, date; affected and fixed versions; evidence; full audit lists.
 ```
-An item first reported today is (NEW); "still open since" is only for an earlier date. In each group: news matches (including the briefing's quick-match rows in the tracker), then project findings (dependencies, secrets, workflows, agent settings, database rules, keys outside projects), then older open items. An action that fits two places appears once, in the first. On daily scans, add "Full refresh and audit: last full run <date>". Third-party clones and silenced projects: one info line each, in the appendix. Items the user marked done since the last report appear once, ticked, then drop off. **Quiet day:** if nothing is new, reopened or changed: the title, the Covers line, "Nothing new · K still open", and the last three sections. Then stop.
+An item first reported today is (NEW); "still open since" is only for an earlier date. In each group: news matches (including the briefing's quick-match rows in the tracker), then project findings (dependencies, secrets, workflows, agent settings, database rules, keys outside projects), then older open items. An action that fits two places appears once, in the first. Items the scan can't check (your computer, GitHub or other online accounts, live dashboards like Supabase) go only under "Needs you". On daily scans, add "Full refresh and audit: last full run <date>". Third-party clones and silenced projects: one info line each, in the appendix. Items the user marked done since the last report appear once, ticked, then drop off. **Quiet day:** if nothing is new, reopened or changed: the title, the Covers line, "Nothing new · K still open", and the last three sections. Then stop.
 
 ## 6. Finish
 - Save both reports, tracker and library. If STORAGE can't be written, deliver them in your final message and say so.
@@ -123,8 +124,10 @@ Report: briefings/DATE-news.md
 Briefing: news only, no actions or fixes; up to ~10 headlines, most urgent first; "(may affect: …)" only where the quick match matched a project. Scorecard off: line 1 is "N new items", no "(may affect)".
 ```
 <Result line>
-🔴 [ID] <project or "your computer">: action — Fix: <step>
+🔴 [ID] <project>: action — Fix: <step>
+Needs you (outside what the scan can see):
+🟠 [ID] <your computer, account or dashboard>: action — Fix: <step>
 <check-on-your-computer line, if machine items are open>
 To-do list: briefings/DATE-projects.md
 ```
-Scan: every checkbox line of the to-do list, grouped by marker, up to ~12, then "N more in the to-do list". <step> is howto.md's action line ("open <project> in Claude Code and say: …" or "say 'how do I …?'").
+Scan: every checkbox line of the to-do list, grouped by marker, up to ~12, then "N more in the to-do list"; "Needs you" only when it has items. <step> is howto.md's action line ("open <project> in Claude Code and say: …" or "say 'how do I …?'").

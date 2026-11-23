@@ -19,7 +19,7 @@ from occupai_scan import config as cfgmod  # noqa: E402
 from occupai_scan.hygiene import key_like  # noqa: E402
 
 # Round 3: the private project report (the shareable news brief is a separate file).
-SECTIONS = ["## To do", "## Check on your computer", "## Not checked", "## Appendix"]
+SECTIONS = ["## To do", "## Needs you (outside what the scan can see)", "## Not checked", "## Appendix"]
 
 
 def read(*parts):

@@ -113,6 +113,7 @@ def local_scan(storage, cfg, today, items):
     before, rows, after = trk.load(tpath)
     # One to-do list grouped by priority; details go to the appendix. Each action appears once.
     updates, todo, not_stack, details = [], {p: [] for p, _ in PRIO}, [], []
+    needs = {p: [] for p, _ in PRIO}  # items the scan can't check: your computer, your accounts
     affected_projects = set()
     for c in lib["checks"]:
         m = match.get(c["id"])
@@ -122,7 +123,7 @@ def local_scan(storage, cfg, today, items):
         meta = it["_meta"]
         details.append(f"- **[{c['id']}]** {it['what_happened']} \"{it['quote']}\" — {meta['source']}, {meta['date']}")
         if m is None:  # account-scoped: can't be judged from files
-            todo[it["priority"]].append(f"- [ ] **[{c['id']}]** your accounts: {it['action']} — {it['why']}; "
+            needs[it["priority"]].append(f"- [ ] **[{c['id']}]** your accounts: {it['action']} — {it['why']}; "
                                         "say 'how do I check this?' for steps (NEW)")
             continue
         c["status_by_project"] = {u: r["status"] for u, r in m["projects"].items() if r["status"] == "open"}
@@ -152,8 +153,8 @@ def local_scan(storage, cfg, today, items):
             not_stack.append(f"- [{c['id']}] {it['title']}: not in your projects ({ev})")
         elif manual:
             updates.append((c["id"], "all", "open", "open", "projects clean; machine check still needed (`node -v`)"))
-            todo[it["priority"]].append(f"- [ ] **[{c['id']}]** your computer: {it['action']} — {it['why']}; "
-                                        "see Check on your computer (NEW)")
+            needs[it["priority"]].append(f"- [ ] **[{c['id']}]** your computer: {it['action']} — {it['why']}; "
+                                         "run the line below (NEW)")
     lib["updated"] = today
     write(checks_path, json.dumps(lib, indent=2) + "\n")
 
@@ -194,7 +195,9 @@ def local_scan(storage, cfg, today, items):
               f"{len(hy['reused_unchanged'])} reused unchanged; resumable hygiene step: {calls} short calls)\n"
               f"{result}\n\n"
               f"## To do\n🆕 new projects: {len(changed['new'])} (first run)\n\n{groups}\n\n"
-              f"## Check on your computer\n{changed.get('computer', 'unknown')}: paste this into "
+              "## Needs you (outside what the scan can see)\n"
+              + "".join(ln + "\n" for p, _ in PRIO for ln in needs[p])  # most urgent first
+              + f"{changed.get('computer', 'unknown')}: paste this into "
               f"{'PowerShell' if changed.get('computer') == 'Windows' else 'Terminal'}: `node -v` — "
               "then paste the output back to me.\n\n"
               "## Not checked\n"

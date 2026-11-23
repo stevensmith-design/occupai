@@ -127,7 +127,7 @@ class TestSetupDoc(unittest.TestCase):
 class TestCheckOnYourComputer(unittest.TestCase):
     def test_section_and_os_commands(self):
         run, howto = read("prompts", "run.md"), read("prompts", "howto.md")
-        self.assertIn("## Check on your computer\n<`computer` from `changed`>", run)
+        self.assertIn("<your computer, account or dashboard>: action — why. <action line>\n<`computer` from `changed`>", run)
         self.assertNotIn("Mac check", run + howto)
         rule = howto[howto.index("## Check on your computer"):]
         for part in ('"paste this into Terminal"', '"paste this into PowerShell"', "py --version"):
