@@ -128,7 +128,9 @@ def _npm_evidence(pol, unit, rules, bad_names, cov):
 
 def _pypi_evidence(pol, unit, rules, cov):
     evidence = []
-    wanted = {pypi_name(r["name"]): r for r in rules}
+    wanted = {}  # every rule per package: a check can list several affected ranges for one package
+    for r in rules:
+        wanted.setdefault(pypi_name(r["name"]), []).append(r)
     reqs, manifests, locks = [], [], []
 
     def py_input(a):
@@ -147,15 +149,15 @@ def _pypi_evidence(pol, unit, rules, cov):
         for n, kind, name, ver in requirement_lines(t):
             norm = pypi_name(name) if name else None
             if kind == "pin" and norm in wanted:
-                r = wanted[norm]
-                try:
-                    hit = pypi_in_range(ver, r["affected"])
-                except RangeError:
-                    cov.skip(rel, "unparsed-version")
-                    continue
-                if hit:
-                    evidence.append({"kind": "package", "ecosystem": "pypi", "file": rel, "line": n,
-                                     "package": r["name"], "version": ver, "affected": r["affected"]})
+                for r in wanted[norm]:
+                    try:
+                        hit = pypi_in_range(ver, r["affected"])
+                    except RangeError:
+                        cov.skip(rel, "unparsed-version")
+                        continue
+                    if hit:
+                        evidence.append({"kind": "package", "ecosystem": "pypi", "file": rel, "line": n,
+                                         "package": r["name"], "version": ver, "affected": r["affected"]})
             elif kind in ("unpinned", "environment-marker") and norm in wanted:
                 cov.skip(rel, "unpinned-requirement")
             elif kind in ("include-not-followed", "url-or-vcs", "editable", "option"):

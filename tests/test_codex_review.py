@@ -1,5 +1,6 @@
 """Scanner bugs from the pre-promotion code review: RLS disabled in a later migration, several ranges
 for one Python package, and Python manifests as audit inputs."""
+import json
 import os
 import shutil
 import sys
@@ -11,6 +12,7 @@ sys.path[:0] = [REPO, HERE]
 
 from test_p0_safety import realtmp  # noqa: E402
 from occupai_scan.hygiene import check_db  # noqa: E402
+from occupai_scan.match import run_match  # noqa: E402
 from occupai_scan.safefs import Policy  # noqa: E402
 
 
@@ -66,6 +68,29 @@ class TestRlsDisabledLater(TmpRoot):
             ("0010_fix.sql", "alter table c enable row level security;\ncreate policy p on c using (true);\n"),
             ("0002_open.sql", "create table c (id int);\nalter table c disable row level security;\n"))
         self.assertEqual(found, {})
+
+
+class TestSeveralRangesForOnePackage(TmpRoot):
+    """A check with two ranges for one package matches a version in either range."""
+
+    def match(self, files, packages):
+        for f, text in files.items():
+            write(self.p("app", f), text)
+        check = {"id": "two-ranges", "scope": "project", "match": {"packages": packages}}
+        return run_match(Policy(self.root), ["app"], [check])["two-ranges"]["projects"]["app"]["status"]
+
+    def test_pypi_first_range_still_matches(self):
+        rules = [{"name": "requests", "ecosystem": "pypi", "affected": ">=1.0 <2.0"},
+                 {"name": "Requests", "ecosystem": "pypi", "affected": ">=3.0 <4.0"}]
+        self.assertEqual(self.match({"requirements.txt": "requests==1.5.0\n"}, rules), "open")
+        self.assertEqual(self.match({"requirements.txt": "requests==3.5.0\n"}, rules), "open")
+        self.assertEqual(self.match({"requirements.txt": "requests==2.5.0\n"}, rules), "not-affected")
+
+    def test_npm_first_range_still_matches(self):
+        lock = {"lockfileVersion": 3, "packages": {"": {}, "node_modules/left-pad": {"version": "1.5.0"}}}
+        rules = [{"name": "left-pad", "affected": ">=1.0.0 <2.0.0"}, {"name": "left-pad", "affected": ">=3.0.0 <4.0.0"}]
+        self.assertEqual(self.match({"package.json": '{"name": "app"}', "package-lock.json": json.dumps(lock)},
+                                    rules), "open")
 
 
 if __name__ == "__main__":

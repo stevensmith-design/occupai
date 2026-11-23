@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- **Every affected range counts for Python packages (#25):** a news check that lists several affected ranges for one Python package (e.g. `>=1.0 <2.0` and `>=3.0 <4.0`) now tests each of them; before, only the last was used, so a pin in an earlier range was reported not affected. npm already tested every range; a test now keeps it that way.
 - **Row level security disabled in a later migration is a finding (#24):** Supabase migrations are read in order (files sorted by path, statements in order), and the last ENABLE or DISABLE ROW LEVEL SECURITY per table wins. A table left disabled is reported as `supabase-table-without-rls` (high) instead of ok. Scanner version 0.1.9: saved results are re-checked once.
 - **"Scanned:" line:** the scan's chat message names what was scanned right after the Result line: "Scanned: <projects> · <managed/not-mine projects> (info only) · Not reachable: <projects or none>", also on quiet days.
 - **"Needs you" group:** in the to-do list and the scan's chat message, items the scan can't check itself (your computer, GitHub or other online accounts, live dashboards like Supabase) are grouped under "Needs you (outside what the scan can see)", after the project findings, which stay first and unlabelled. The section replaces "Check on your computer" and keeps its copy-paste line; Fix lines are unchanged.
