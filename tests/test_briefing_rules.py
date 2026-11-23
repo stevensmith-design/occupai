@@ -1,4 +1,5 @@
-"""Briefing rules from the 2026-11-23 review: every CVE of a multi-CVE issue is listed."""
+"""Briefing rules from the 2026-11-23 review: every CVE of a multi-CVE issue is listed, and a changed
+priority is explained (or the earlier one kept)."""
 import os
 import unittest
 
@@ -27,6 +28,24 @@ class TestMultiCveItems(unittest.TestCase):
         news = news_section(run_md())
         self.assertLess(news.index("**Claims match the source:**"), news.index("**Several CVEs for one issue:**"))
         self.assertLess(news.index("**Several CVEs for one issue:**"), news.index("**Priority**"))
+
+
+class TestPriorityChanges(unittest.TestCase):
+    """A CVE reported 🔴 one day and 🟠 later says why, or keeps 🔴."""
+
+    def test_changed_priority_is_marked_updated_with_a_reason(self):
+        news = news_section(run_md())
+        self.assertIn("An item or CVE reported earlier at another priority", news)
+        self.assertIn("mark it UPDATED with the reason in a few words", news)
+        self.assertIn("🔴 → 🟠: no exploitation reported; patch widely available", news)
+
+    def test_no_reason_keeps_the_earlier_priority(self):
+        self.assertIn("No reason: keep the earlier priority.", news_section(run_md()))
+
+    def test_earlier_priority_comes_from_saved_state(self):
+        # checks.json is read every run and keeps each check's severity, so an older report isn't needed.
+        self.assertIn("(checks.json `severity`, earlier reports)", news_section(run_md()))
+        self.assertIn('"severity"', open(os.path.join(REPO, "schema", "checks.schema.json"), encoding="utf-8").read())
 
 
 if __name__ == "__main__":

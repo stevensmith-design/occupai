@@ -14,7 +14,7 @@ Read `KIT/prompts/howto.md` first: its rules apply to every step.
 ## 1. Read state (only what's needed)
 - CONFIG: ROOT, `my_owners`, `news_sources`, `timezone`, STORAGE, `notifications`, `schedule`.
 - `STORAGE/actioned.md`: every row. `done` / `not-affected`: don't report again unless REOPENED. `snoozed until DATE`: silent until then. `watching`: only material changes, marked UPDATED. `open`: stays in the actions.
-- The latest report of this mode in `STORAGE/briefings/` (`DATE-news.md` or `DATE-projects.md`): the news window starts at its date (first run: the last 7 days). Reuse each open item's priority. Never read reports older than 14 days.
+- The latest report of this mode in `STORAGE/briefings/` (`DATE-news.md` or `DATE-projects.md`): the news window starts at its date (first run: the last 7 days). Never read reports older than 14 days.
 - `STORAGE/library/checks.json` (IDs, titles, fix lines) and `stack.md`; `baseline.md` only if an item changes it.
 - **Catch-up:** if runs were missed, the window covers everything since the last report; say "Catch-up: covers <date> → today (missed: <dates>)". Never invent a missed run's results.
 - If ROOT can't be reached (no folder access, computer asleep, no shell here): the briefing still does the news, says "Projects not checked; the next run will catch up", and skips the quick match; the scan stops. Both end with the recovery step from howto.md.
@@ -31,7 +31,7 @@ Per new item, or tracker item with a material change (REOPENED or UPDATED, sayin
 - **What happened** in two sentences, and one verbatim quote under 15 words from a page fetched in this run, with source and date (or "no quote: page not fetched").
 - **Claims match the source:** attribution (country, group), victim and impact numbers, "actively exploited" and "malicious" only as the fetched source states them. If it doesn't say it, leave it out or write "the source doesn't attribute it".
 - **Several CVEs for one issue:** when the source names a set, list every CVE, each with its affected configuration in a few words, only as the source states them.
-- **Priority** with a reason: CRITICAL (actively exploited, mass compromise, malware in a popular package), HIGH (serious, fix available, likely exploited), MEDIUM / LOW.
+- **Priority** with a reason: CRITICAL (actively exploited, mass compromise, malware in a popular package), HIGH (serious, fix available, likely exploited), MEDIUM / LOW. An item or CVE reported earlier at another priority (checks.json `severity`, earlier reports): mark it UPDATED with the reason in a few words ("🔴 → 🟠: no exploitation reported; patch widely available"). No reason: keep the earlier priority.
 - **Touches my stack?** yes / no / maybe, judged against stack.md (any listed tech), naming the projects. Before the first full run, use `stack` in CONFIG.
 - **What to do:** exact commands, fixed versions, indicators and what to rotate. Defang every IOC.
 - **Fixed version not found:** mark the check `unknown` and say so; never a rule matching every version. A framework that bundles vulnerable code with no confirmed fix gets one plain line: "<framework> X.Y fixes <other issue>; <CVE> may still apply until <framework> ships a fix", so two items never seem to contradict.

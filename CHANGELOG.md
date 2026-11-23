@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- **Priority changes are explained:** an item or CVE reported earlier at another priority is marked UPDATED with the reason in a few words (e.g. "🔴 → 🟠: no exploitation reported; patch widely available"); with no reason, the earlier priority stays. Replaces "reuse each open item's priority".
 - **Every CVE of a multi-CVE issue is listed:** when a source names a set of CVEs for one issue (e.g. five nginx CVEs in one write-up), the briefing item lists all of them, each with its affected configuration in a few words, only as the source states them. Paid for by cutting text `run.md` and `howto.md` repeated from each other.
 - **First-day items say (NEW) (#20):** an item first reported in today's run is marked (NEW) in the to-do list; "(still open since <date>)" is only for items first reported on an earlier day.
 - **Build output is skipped everywhere (#18):** Xcode `SourcePackages` and `DerivedData`, SwiftPM `.build`, `.gradle`, `.svelte-kit`, `.nuxt` and `.output` join the folders that are never read (`build`, `dist`, `.next`, `out`, `Pods`, `target` already were). Xcode and SwiftPM checkouts in these folders can hold other projects' example lockfiles. The audit lists the generated folders it skipped (`generated_skipped`), and the scan names them in one line under "Not checked".
