@@ -19,7 +19,7 @@ OccupAI is **two local scheduled tasks** on your computer, every day: the **brie
 2. Follow steps 3 to 5 of [SETUP.md](../../SETUP.md) yourself: create `KIT/data`, copy the config and templates, edit the config, and check the project list with `python3 scan.py discover`.
 
 ## 2. Create the tasks
-You shouldn't need this: setup creates both tasks from the chat. Last resort, if the chat can't: in the **Code** tab, click **Scheduled** → **New task**, or describe the task in any session and Claude creates it. Create two tasks: "OccupAI briefing" daily at `schedule.briefing` and "OccupAI scan" at `schedule.scan` (e.g. 07:52 and 08:12: a few minutes before the hour, because on-the-hour runs can be delayed), each with the prompt below and its `Mode:` line filled in. Set the working folder to your projects folder, and make sure it can also read the kit folder and write its `data/` folder.
+You shouldn't need this: setup creates both tasks from the chat. Last resort, if the chat can't: in the **Code** tab, click **Scheduled** → **New task**, or describe the task in any session and Claude creates it. Create two tasks: "OccupAI briefing" at `schedule.briefing` and "OccupAI scan" at `schedule.scan` (e.g. 07:52 and 08:12: a few minutes before the hour, because on-the-hour runs can be delayed), each with the prompt below and its `Mode:` line filled in. Set the working folder to your projects folder, and make sure it can also read the kit folder and write its `data/` folder.
 
 The prompt is the block in step 6 of [SETUP.md](../../SETUP.md) (one copy, so the two never drift apart).
 

@@ -248,8 +248,10 @@ class TestTwoTasks(unittest.TestCase):
 
     def test_setup_creates_both_tasks(self):
         s = read("SETUP.md")
-        for part in ('"OccupAI briefing" daily at `schedule.briefing` (Mode: briefing)', '"OccupAI scan" 20 minutes later (Mode: scan)',
-                     "`schedule.scan` (20 minutes later)", "Uninstall: delete both tasks"):
+        for part in ('"OccupAI briefing" at `schedule.briefing` (Mode: briefing)', '"OccupAI scan" at `schedule.scan` (Mode: scan)',
+                     "`schedule.scan` (20 minutes later)", "Uninstall: delete both tasks",
+                     '"Every day (Recommended)" · "Weekdays only"', "weekdays: day of week `1-5` in both",
+                     "Monday's run covers the weekend."):  # #3
             self.assertIn(part, s)
         block = next(b for b in re.findall(r"```\n(.*?)```", s, re.S) if "Run OccupAI" in b)
         self.assertIn("Mode: <briefing|scan>", block)
