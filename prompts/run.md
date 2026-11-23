@@ -124,10 +124,11 @@ Report: briefings/DATE-news.md
 Briefing: news only, no actions or fixes; up to ~10 headlines, most urgent first; "(may affect: …)" only where the quick match matched a project. Scorecard off: line 1 is "N new items", no "(may affect)".
 ```
 <Result line>
+Scanned: <projects> · <managed/not-mine projects> (info only) · Not reachable: <projects or none>
 🔴 [ID] <project>: action — Fix: <step>
 Needs you (outside what the scan can see):
 🟠 [ID] <your computer, account or dashboard>: action — Fix: <step>
 <check-on-your-computer line, if machine items are open>
 To-do list: briefings/DATE-projects.md
 ```
-Scan: every checkbox line of the to-do list, grouped by marker, up to ~12, then "N more in the to-do list"; "Needs you" only when it has items. <step> is howto.md's action line ("open <project> in Claude Code and say: …" or "say 'how do I …?'").
+Scan: every checkbox line of the to-do list, grouped by marker, up to ~12, then "N more in the to-do list"; "Needs you" only when it has items. "Scanned:" comes from `changed`, also on quiet days. <step> is howto.md's action line ("open <project> in Claude Code and say: …" or "say 'how do I …?'").

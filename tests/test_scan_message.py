@@ -1,5 +1,5 @@
 """Scan message and to-do list (2026-11-23): items the scan can't check are grouped under "Needs you",
-after the project findings."""
+after the project findings, and the message names what was scanned."""
 import os
 import re
 import unittest
@@ -47,6 +47,17 @@ class TestNeedsYou(unittest.TestCase):
             demo = f.read()
         self.assertIn("## " + NEEDS, demo)
         self.assertNotIn("Check on your computer", demo)
+
+
+class TestScannedLine(unittest.TestCase):
+    def test_right_after_the_result_line(self):
+        lines = scan_template()
+        self.assertEqual(lines[0], "<Result line>")
+        self.assertEqual(lines[1], "Scanned: <projects> · <managed/not-mine projects> (info only) · "
+                                   "Not reachable: <projects or none>")
+
+    def test_also_on_quiet_days(self):
+        self.assertIn('"Scanned:" comes from `changed`, also on quiet days.', run_md())
 
 
 if __name__ == "__main__":

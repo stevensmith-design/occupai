@@ -67,6 +67,7 @@ class TestFinalMessageTemplates(unittest.TestCase):
     def test_scan_template(self):
         self.assertEqual(self.blocks[1], [
             "<Result line>",
+            "Scanned: <projects> · <managed/not-mine projects> (info only) · Not reachable: <projects or none>",
             "🔴 [ID] <project>: action — Fix: <step>",
             "Needs you (outside what the scan can see):",
             "🟠 [ID] <your computer, account or dashboard>: action — Fix: <step>",
