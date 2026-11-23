@@ -4,7 +4,7 @@
 
 # OccupAI
 
-**A daily security check-in for people who build with AI.** v0.1, a side project.
+**A daily security check-in for people who build with AI.** v0.2, a side project.
 
 Made by Steven Smith. More on OccupAI and my other work: [stevensmith.dev/occupai](https://stevensmith.dev/occupai?utm_source=github&utm_campaign=occupai)
 
@@ -121,7 +121,7 @@ STORAGE (KIT/data)     actioned.md · library/ (checks.json, baseline.md) · sta
 - **Limited coverage:** npm and Python only for the dependency audit (pnpm, yarn, bun, Poetry and uv lockfiles are listed as "not covered"); Supabase and Firebase only for database rules; Supabase migrations may not match your live database.
 - **It can't see** what's installed on your machine (it gives you a one-line command to run), GitHub-side state (forks, org settings, workflow history), or your cloud accounts.
 - **Local runs need your computer on.** Scheduled tasks skip or catch up when it's asleep, depending on the tool.
-- v0.1: the scan script, SETUP.md's steps and the demo are covered by offline tests.
+- v0.2: the scan script, SETUP.md's steps and the demo are covered by offline tests.
 
 ## Troubleshooting
 
@@ -144,7 +144,7 @@ STORAGE (KIT/data)     actioned.md · library/ (checks.json, baseline.md) · sta
 **How do I mark something handled?** Open the OccupAI folder in your AI tool and say `mark <ID> done` (elsewhere, with the `occupai` skill installed: `/occupai mark <ID> done`), run `python3 scan.py tracker mark <ID> done`, or edit `actioned.md`.
 
 ## Roadmap
-Not in v0.1:
+Not in v0.2:
 1. **A starter library** of recent high-impact advisories with fixed versions, and a longer look-back on the first run, so a fresh install doesn't start from an empty library.
 2. **`occupai init`**: a setup interview that fits the checks and news sources to your stack (SETUP.md's discovery step is the minimal version).
 3. **Posting the news brief** to Slack or another team chat, and **fix on request**: a ready-to-paste fix request per to-do item.

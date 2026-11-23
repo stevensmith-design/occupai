@@ -96,7 +96,9 @@ class TestDocsMatchWhatExists(unittest.TestCase):
         c = read("CHANGELOG.md")
         headings = re.findall(r"(?m)^## .*$", c)
         # the newest release is first, after an optional "Unreleased" section
-        self.assertIn("0.1.0", headings[1] if headings[0] == "## Unreleased" else headings[0])
+        newest = headings[1] if headings[0] == "## Unreleased" else headings[0]
+        self.assertRegex(newest, r"^## \d+\.\d+\.\d+ \(\d{4}-\d{2}-\d{2}\)")
+        self.assertIn("## 0.1.0 (2026-11-18)", c)
 
 
 if __name__ == "__main__":
