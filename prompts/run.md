@@ -9,7 +9,7 @@ Read `KIT/prompts/howto.md` first: its rules apply to every step.
 - **scan** (daily, after the briefing; also "scan now"): steps 1, 3, 4, and the project report.
   - **full** when today is `schedule.full_day` (default Monday), on the first run, when the last full run is more than 8 days old, or when the user asks ("run a full scan"; "scan only <project>" is a full run with `--only <project>`).
   - **daily** on every other day: standing checks on new and changed projects plus a replay of every check.
-- **Overlap guard:** the briefing runs `SCAN marker start` first and `SCAN marker done` last (also when it stops early). The scan runs `SCAN marker wait` first; while it prints `"briefing_running": true`, repeat it, up to 5 times; still true: write nothing and end with "The briefing is still running. Reply **try again** in a few minutes."
+- **Overlap guard:** the briefing runs `SCAN marker start` first and `SCAN marker done` last (also when it stops early). The scan runs `SCAN marker wait` first; while it prints `"briefing_running": true` or `"news_pending": true`, repeat it, up to 5 times; still running: write nothing and end with "The briefing is still running. Reply **try again** in a few minutes."; still pending: run with the library as it is and add under "Not checked": "Today's news wasn't in yet; say 'scan now' after the briefing's notification."
 
 ## 1. Read state (only what's needed)
 - CONFIG: ROOT, `my_owners`, `news_sources`, `timezone`, STORAGE, `notifications`, `schedule`.

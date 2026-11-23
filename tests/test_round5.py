@@ -1,5 +1,6 @@
 """Round 5: the kit outside the projects folder, the shareable-brief marker switch, and the briefing/scan
 overlap guard."""
+import datetime
 import json
 import os
 import re
@@ -151,6 +152,35 @@ class TestBriefingMarker(unittest.TestCase):
         self.assertTrue(self.m("wait", "--budget", "1")["briefing_running"])  # still running after its budget
         self.assertLess(time.time() - t, 20)
 
+    def test_news_pending(self):
+        """#1: a catch-up run can start the scan before the briefing has even set its marker."""
+        from occupai_scan.cli import _now_local, briefing_due_today
+        today = _now_local({"timezone": "UTC"})
+        other = (today.isoweekday() + 1) % 7  # a cron day of week that isn't today
+        def cfg(cron):
+            write(self.cfg, f"projects_root: {self.tmp}/projects\nstorage:\n  path: {self.tmp}/storage\n"
+                            f"timezone: UTC\nschedule:\n  briefing: \"{cron}\"\n")
+        self.assertFalse(self.m("check")["news_pending"])  # no briefing scheduled at all
+        cfg("0 0 * * *")
+        self.assertTrue(self.m("check")["news_pending"])  # due today, no news report yet
+        t = time.time()
+        self.assertTrue(self.m("wait", "--budget", "1")["news_pending"])  # wait polls for it, within its budget
+        self.assertLess(time.time() - t, 20)
+        write(os.path.join(self.tmp, "storage", "briefings", f"{today.date().isoformat()}-news.md"), "# News\n")
+        self.assertFalse(self.m("wait")["news_pending"])  # the report exists
+        os.remove(os.path.join(self.tmp, "storage", "briefings", f"{today.date().isoformat()}-news.md"))
+        cfg(f"0 0 * * {other}")
+        self.assertFalse(self.m("check")["news_pending"])  # no briefing today
+        # weekday-aware, names and ranges, and not before the briefing's time
+        mon = datetime.datetime(2026, 11, 23, 9, 0)
+        sat = datetime.datetime(2026, 11, 21, 9, 0)
+        self.assertTrue(briefing_due_today("52 7 * * 1-5", mon))
+        self.assertFalse(briefing_due_today("52 7 * * 1-5", sat))
+        self.assertTrue(briefing_due_today("52 7 * * sat,sun", sat))
+        self.assertTrue(briefing_due_today("52 7 * * 0-7", sat))
+        self.assertFalse(briefing_due_today("52 9 * * *", mon))  # later today: not due yet
+        self.assertFalse(briefing_due_today(None, mon))
+
     def test_never_writes_inside_the_projects(self):
         cfg = os.path.join(self.tmp, "bad.yaml")
         write(cfg, f"projects_root: {self.tmp}/projects\nstorage:\n  path: {self.tmp}/projects/a\n")
@@ -165,6 +195,8 @@ class TestPromptsRound5(unittest.TestCase):
         self.assertIn("the briefing runs `SCAN marker start` first and `SCAN marker done` last", run)
         self.assertIn("The scan runs `SCAN marker wait` first", run)
         self.assertIn("The briefing is still running. Reply **try again** in a few minutes.", run)
+        self.assertIn('or `"news_pending": true`, repeat it, up to 5 times', run)  # #1: news not in yet
+        self.assertIn("Today's news wasn't in yet; say 'scan now' after the briefing's notification.", run)
         self.assertNotIn("marker", read("SETUP.md"))  # the scan prompt handles overlap; setup never waits itself
 
     def test_markers_follow_the_scorecard_switch(self):

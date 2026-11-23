@@ -11,7 +11,7 @@ from .safefs import (IGNORE_MARKER, PRUNE, SENSITIVE_GLOBS, Policy, excluded,  #
                      is_sensitive)
 
 # Bump when check logic changes: cached hygiene results saved by older versions are re-run.
-SCRIPT_VERSION = "0.1.9"
+SCRIPT_VERSION = "0.1.10"
 
 # Only used when no config is given. Real exclusions live in occupai.config.yaml.
 FALLBACK_EXCLUDE = ["*/.claude/worktrees/*"]

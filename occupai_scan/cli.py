@@ -16,7 +16,8 @@ Subcommands (all print JSON on stdout):
   save-state   write fingerprints + results for next time
   tracker      list | mark ID STATUS [--note ...] | add ID "Item" (actioned.md in the storage folder)
   marker       start | done | check | wait: the briefing's "running" marker (STORAGE/state/briefing-running),
-               so the scan doesn't start while the briefing is still writing the tracker and library
+               so the scan doesn't start while the briefing is still writing the tracker and library;
+               also "news_pending" while today's news report is missing although the briefing was due today
   project      list | NAME STATUS [--note ...]: your decision about a project, applied to every check
                (active | inactive --not-deployed | not-mine | managed | skip); stored in the storage folder.
                NAME may be <project>/<folder>: quiets that sub-folder's dependency audit findings
@@ -186,7 +187,7 @@ def _main(argv=None):
     if a.cmd == "tracker":
         return cmd_tracker(a, storage, root, exclude)
     if a.cmd == "marker":
-        return cmd_marker(a, storage, root, exclude)
+        return cmd_marker(a, storage, root, exclude, cfg)
 
     if not root:
         return fail("no projects folder: pass --root or set projects_root in occupai.config.yaml")
@@ -814,9 +815,52 @@ def cmd_project(a, units, path, root, exclude):
     return 0
 
 
-def cmd_marker(a, storage, root, exclude):
+_DOW = {n: i for i, n in enumerate(["sun", "mon", "tue", "wed", "thu", "fri", "sat"])}
+
+
+def _cron_dow(field):
+    """Cron days of week as {0..6} (0 = Sunday; 7 also Sunday; names and ranges allowed), or None for any."""
+    days = set()
+    for part in str(field).lower().split(","):
+        rng, _, step = part.partition("/")
+        if rng in ("*", "?"):
+            if not step:
+                return None
+            lo, hi = 0, 6
+        else:
+            ends = [_DOW.get(x[:3], x) for x in rng.split("-", 1)]
+            lo, hi = int(ends[0]), int(ends[-1])
+        days.update(d % 7 for d in range(lo, hi + 1, int(step or 1)))
+    return days
+
+
+def _now_local(cfg):
+    try:
+        from zoneinfo import ZoneInfo
+        return datetime.datetime.now(ZoneInfo(str(cfg.get("timezone") or "UTC")))
+    except Exception:  # no tz database here (e.g. Windows without tzdata) or a bad name: the computer's clock
+        return datetime.datetime.now()
+
+
+def briefing_due_today(cron, now):
+    """True when the briefing's cron (`schedule.briefing`) runs today at a time that has already passed.
+    Only minute, hour and day of week are read; anything unreadable counts as due (the scan just waits)."""
+    f = str(cron or "").split()
+    if len(f) != 5:
+        return False
+    try:
+        days = _cron_dow(f[4])
+        if days is not None and (now.isoweekday() % 7) not in days:
+            return False
+        return (now.hour, now.minute) >= (int(f[1].split(",")[0]), int(f[0].split(",")[0]))
+    except ValueError:
+        return True
+
+
+def cmd_marker(a, storage, root, exclude, cfg):
     """The briefing writes start at its beginning and done at its end (overwritten, never deleted: deletion
-    may be blocked where the state lives). The scan runs check (or wait) first."""
+    may be blocked where the state lives). The scan runs check (or wait) first. `news_pending`: today's news
+    report isn't there yet although the briefing was due today (a catch-up run may have started the scan first)."""
     path = os.path.join(storage, "state", "briefing-running")
     try:
         path = _dest(path, root, exclude, "marker")
@@ -832,17 +876,23 @@ def cmd_marker(a, storage, root, exclude):
     if action not in ("check", "wait"):
         return fail("usage: marker start | done | check | wait")
 
+    sched = cfg.get("schedule") if isinstance(cfg.get("schedule"), dict) else {}
+    now = _now_local(cfg)
+    news = os.path.join(storage, "briefings", f"{now.date().isoformat()}-news.md")
+    due = briefing_due_today(sched.get("briefing"), now)
+
     def status():
         m = load_json(path, {})
         m = m if isinstance(m, dict) else {}
         age = time.time() - float(m.get("at") or 0) if isinstance(m.get("at"), (int, float)) else None
         running = m.get("state") == "running" and age is not None and 0 <= age < MARKER_FRESH
-        return {"briefing_running": running, **({"age_minutes": round(age / 60, 1)} if age is not None else {}),
+        return {"briefing_running": running, "news_pending": due and not os.path.isfile(news),
+                **({"age_minutes": round(age / 60, 1)} if age is not None else {}),
                 **({"stale": True} if m.get("state") == "running" and not running else {})}
     st, t0 = status(), time.time()
     if action == "wait":
         # Short polls inside one shell call; the prompt repeats `wait` a few times, then goes on with a note.
-        while st["briefing_running"] and time.time() - t0 < min(a.budget, 140):
+        while (st["briefing_running"] or st["news_pending"]) and time.time() - t0 < min(a.budget, 140):
             time.sleep(min(10, max(0.05, min(a.budget, 140) - (time.time() - t0))))
             st = status()
     out(st)
