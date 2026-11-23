@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- **Official news sources for your stack (#23):** setup and full runs add the official security page for each tech your projects use to `news_sources.stack_vendors`, when it isn't watched yet (e.g. PHP, Ruby, Go, RustSec, Django, Docker, PostgreSQL: vendor pages and project security advisories only, never aggregators). `discover` and `save-state` report it as `add_source`; setup lists it under "Scanning for", and a run that finds new tech says it added the source. Tech with no official page in the kit's list is unchanged.
 - **A Python manifest added during a paused audit re-runs it (#26):** `pyproject.toml`, `setup.py`, `setup.cfg` and `Pipfile` are now part of the audit's input fingerprint (requirements files already were), so a resumed or saved audit result from before the manifest appeared isn't reused.
 - **Every affected range counts for Python packages (#25):** a news check that lists several affected ranges for one Python package (e.g. `>=1.0 <2.0` and `>=3.0 <4.0`) now tests each of them; before, only the last was used, so a pin in an earlier range was reported not affected. npm already tested every range; a test now keeps it that way.
 - **Row level security disabled in a later migration is a finding (#24):** Supabase migrations are read in order (files sorted by path, statements in order), and the last ENABLE or DISABLE ROW LEVEL SECURITY per table wins. A table left disabled is reported as `supabase-table-without-rls` (high) instead of ok. Scanner version 0.1.9: saved results are re-checked once.

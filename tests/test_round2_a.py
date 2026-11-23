@@ -193,6 +193,30 @@ class TestStackInventory(Case):
         self.assertEqual(second["new_in_stack"], [{"tech": "Fly.io", "projects": ["api"],
                                                    "checked_locally": "news only"}])
 
+        write(os.path.join(self.root, "api", "go.mod"), "module x\n")
+        third = self.full_run()  # new tech with an official source: offered for stack_vendors
+        self.assertEqual(third["new_in_stack"], [{"tech": "Go modules", "projects": ["api"],
+                                                  "checked_locally": "news only",
+                                                  "add_source": [{"name": "Go vulnerability database",
+                                                                  "url": "https://pkg.go.dev/vuln/list"}]}])
+
+    def test_official_sources_map(self):
+        from occupai_scan.stack import SOURCES, sources, sources_for
+        gh = "https://github.com/modelcontextprotocol/{}/security/advisories"
+        watched = {"stack_vendors": [{"name": "Go", "url": "https://PKG.go.dev/vuln/list/"},
+                                     {"name": "TS", "url": gh.format("typescript-sdk")}], "news": None}
+        self.assertEqual(sources_for("Go modules", watched), [])  # already watched, in any spelling
+        self.assertEqual(sources_for("Fly.io", watched), [])  # unmapped: nothing added
+        self.assertEqual(sources_for("Ruby (Bundler)", None)[0]["url"], "https://www.ruby-lang.org/en/security/")
+        self.assertEqual([s["url"] for s in sources_for("MCP SDK", None)],
+                         [gh.format("typescript-sdk"), gh.format("python-sdk")])
+        self.assertEqual([s["url"] for s in sources_for("MCP SDK", watched)], [gh.format("python-sdk")])
+        self.assertEqual(sources("MCP servers"), [("MCP servers security advisories", gh.format("servers"))])
+        for label in SOURCES:  # security pages only, over https; never a project homepage
+            for name, url in sources(label):
+                self.assertTrue(name and url.startswith("https://"), url)
+                self.assertNotEqual(url.rstrip("/"), "https://modelcontextprotocol.io", label)
+
     def test_briefing_relevance_uses_the_inventory(self):
         """A breach at a CI provider nobody listed in `stack` must reach the project
         that has the provider's config file. The briefing reads stack.md; this is its lookup."""

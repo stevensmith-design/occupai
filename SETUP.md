@@ -29,7 +29,7 @@ In `KIT/data/occupai.config.yaml`, change only: `kit_path` (KIT), `projects_root
 ## 5. Show what it will watch
 Run `python3 KIT/scan.py discover --config KIT/data/occupai.config.yaml`. Show, in one message:
 - **Projects I'll watch:** `[x] name` lines; `"watch": false` entries (backups, copies) as `[ ] name (why)`.
-- **Scanning for:** each `scanning_for` tech with its projects.
+- **Scanning for:** each `scanning_for` tech with its projects; add each `add_source` to `news_sources.stack_vendors` and show it.
 - **Which GitHub usernames and organisations do you work in** (yours, clients', employer's)? List `github_owners`; per owner: "mine" · "a client or employer org: watch it, but as someone else's (info)" · "not mine".
 
 `kit.attach_to_tasks` true: KIT needs access and attaching too. Ask **"Anything to add or remove?"** Add unticked or removed folders to `exclusions`, set `my_owners` (or `[]`), run `python3 KIT/scan.py project <name> managed` for each project whose `owner` is a client or employer org, and re-run `discover` until the user agrees.

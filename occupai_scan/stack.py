@@ -37,9 +37,69 @@ PYPI = {"django": "Django", "flask": "Flask", "fastapi": "FastAPI", "anthropic":
         "firebase-admin": "Firebase", "langchain": "LangChain", "mcp": "MCP SDK"}
 _REQ_NAME = re.compile(r"^\s*([A-Za-z0-9][A-Za-z0-9._-]*)")
 
+# label -> its official security news page(s) as (name, url), or a list of them: the vendor's own site or the
+# project's GitHub security advisories, never aggregators or blogs. Added to `news_sources.stack_vendors`.
+_GH = "https://github.com/{}/security/advisories"
+SOURCES = {
+    "npm": ("Node.js security releases", "https://nodejs.org/en/blog/vulnerability"),
+    "PyPI": ("Python security", "https://www.python.org/news/security/"),
+    "Next.js": ("Next.js blog", "https://nextjs.org/blog"), "React": ("React blog", "https://react.dev/blog"),
+    "Vercel": ("Vercel changelog", "https://vercel.com/changelog"),
+    "Supabase": ("Supabase changelog", "https://supabase.com/changelog"),
+    "Claude Code": ("Claude Code security advisories", _GH.format("anthropics/claude-code")),
+    "MCP servers": ("MCP servers security advisories", _GH.format("modelcontextprotocol/servers")),
+    "MCP SDK": [("MCP TypeScript SDK security advisories", _GH.format("modelcontextprotocol/typescript-sdk")),
+                ("MCP Python SDK security advisories", _GH.format("modelcontextprotocol/python-sdk"))],
+    "PHP (Composer)": ("PHP news", "https://www.php.net/"),
+    "Ruby (Bundler)": ("Ruby security", "https://www.ruby-lang.org/en/security/"),
+    "Go modules": ("Go vulnerability database", "https://pkg.go.dev/vuln/list"),
+    "Rust (Cargo)": ("RustSec advisories", "https://rustsec.org/advisories/"),
+    "Flutter/Dart": ("Flutter security advisories", _GH.format("flutter/flutter")),
+    "Django": ("Django weblog (security releases)", "https://www.djangoproject.com/weblog/"),
+    "Flask": ("Flask security advisories", _GH.format("pallets/flask")),
+    "FastAPI": ("FastAPI security advisories", _GH.format("fastapi/fastapi")),
+    "Docker": ("Docker security announcements", "https://docs.docker.com/security/security-announcements/"),
+    "GitLab CI": ("GitLab releases", "https://about.gitlab.com/releases/categories/releases/"),
+    "Firebase": ("Firebase release notes", "https://firebase.google.com/support/releases"),
+    "Electron": ("Electron security advisories", _GH.format("electron/electron")),
+    "Express": ("Express security updates", "https://expressjs.com/en/advanced/security-updates.html"),
+    "Vue": ("Vue security advisories", _GH.format("vuejs/core")),
+    "Nuxt": ("Nuxt security advisories", _GH.format("nuxt/nuxt")),
+    "Svelte": ("SvelteKit security advisories", _GH.format("sveltejs/kit")),
+    "React Native": ("React Native security advisories", _GH.format("facebook/react-native")),
+    "PostgreSQL": ("PostgreSQL security", "https://www.postgresql.org/support/security/"),
+    "MongoDB": ("MongoDB security alerts", "https://www.mongodb.com/resources/products/alerts"),
+    "Redis": ("Redis security advisories", _GH.format("redis/redis")),
+    "LangChain": ("LangChain security advisories", _GH.format("langchain-ai/langchain")),
+    "Cursor": ("Cursor security advisories", _GH.format("cursor/cursor")),
+}
+
 
 def coverage(label):
     return COVERED.get(label, "news only")
+
+
+def _norm(url):
+    return str(url).strip().lower().rstrip("/").replace("://www.", "://")
+
+
+def sources(label):
+    src = SOURCES.get(label) or []
+    return [src] if isinstance(src, tuple) else src
+
+
+def sources_for(label, news_sources):
+    """[{name, url}] of the label's official sources not yet in any group (empty when unmapped)."""
+    groups = news_sources.values() if isinstance(news_sources, dict) else []
+    have = {_norm(s.get("url")) for g in groups if isinstance(g, list) for s in g if isinstance(s, dict)}
+    return [{"name": n, "url": u} for n, u in sources(label) if _norm(u) not in have]
+
+
+def tech_row(label, projects, news_sources):
+    """One "scanning for" entry; `add_source` only when there are official sources not yet watched."""
+    row = {"tech": label, "projects": projects, "checked_locally": coverage(label)}
+    src = sources_for(label, news_sources)
+    return {**row, "add_source": src} if src else row
 
 
 def detect(pol, unit):

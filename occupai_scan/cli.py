@@ -50,7 +50,7 @@ from .discovery import discover, fingerprint, lockfile_hashes, looks_like_copy, 
 from .hygiene import CHECKS, check_statuses, is_complete, keys_outside_projects, run_hygiene, severity_counts
 from .match import load_checks, run_match
 from .safefs import WALK_DEPTH, Coverage, PathRefused, Policy, UnsafeDestination, check_destination
-from .stack import coverage as stack_coverage, detect, inventory, render as render_stack
+from .stack import detect, inventory, render as render_stack, tech_row
 
 CMDS = ["projects", "discover", "changed", "hygiene", "versions", "match", "route-check", "audit", "save-state", "tracker",
         "project", "marker"]
@@ -291,7 +291,8 @@ def _main(argv=None):
             stack_path = stack_path and _dest(stack_path, root, exclude, "stack.md")
         except UnsafeDestination as e:
             return fail(str(e))
-        return cmd_save_state(a, pol, units, state, prev, state_path, ckey, statuses, stack_path)
+        return cmd_save_state(a, pol, units, state, prev, state_path, ckey, statuses, stack_path,
+                              cfg.get("news_sources"))
     return 0
 
 
@@ -318,7 +319,7 @@ def cmd_discover(pol, units, omitted, skipped, silenced, exclude, cfg):
                 uses[u] = []
     inv = inventory(uses)
     out({"root": pol.root, "computer": computer(cfg), "kit": kit_place(cfg, pol.root), "watch": watch,
-         "scanning_for": [{"tech": t, "projects": ps, "checked_locally": stack_coverage(t)} for t, ps in inv.items()],
+         "scanning_for": [tech_row(t, ps, cfg.get("news_sources")) for t, ps in inv.items()],
          "github_owners": dict(sorted(owners.items(), key=lambda kv: (-kv[1], kv[0].lower()))),
          "already_excluded": exclude, "skipped": skipped, "omitted": omitted,
          "next": "untick = add the folder to `exclusions` in the config; then run discover again"})
@@ -629,7 +630,7 @@ def _by_unit(results, units):
     return {us[0]: results[c] for c, us in names.items() if len(us) == 1 and c in results}
 
 
-def cmd_save_state(a, pol, units, state, prev, state_path, ckey, statuses, stack_path):
+def cmd_save_state(a, pol, units, state, prev, state_path, ckey, statuses, stack_path, news_sources):
     if not state_path:
         return fail("save-state needs --state or a config")
     hy_doc = au_doc = None
@@ -708,7 +709,7 @@ def cmd_save_state(a, pol, units, state, prev, state_path, ckey, statuses, stack
          "not_saved_inputs_changed": {k: v for k, v in stale.items() if v},
          "stack_file": stack_path, "stack": len(inv),
          "new_in_stack": "first-run" if old_inv is None else
-         [{"tech": t, "projects": inv[t], "checked_locally": stack_coverage(t)} for t in new_tech]})
+         [tech_row(t, inv[t], news_sources) for t in new_tech]})
     return 0
 
 

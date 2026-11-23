@@ -29,8 +29,9 @@ DEMO_CHECKS = os.path.join(REPO, "examples", "demo", "library", "checks.json")
 # release fixes (folder-access wording, folder list, no helper task, news summary, accuracy line) plus ~110 for
 # round 5 (kit access, overlap guard, scorecard switch) plus ~65 for round 7's two final-message templates
 # (raised from 4985 rather than cut real rules), then 5100 for the scan message's "Scanned:" line and
-# "Needs you" group (2026-11-23, after cutting the repeats that could go); SETUP.md under 950.
-WORD_BUDGET = 5100
+# "Needs you" group (2026-11-23, after cutting the repeats that could go), then 5150 for #23's stack news sources
+# (setup and "New in your stack" add `add_source`; raised rather than cut real rules, 2026-11-23); SETUP.md under 950.
+WORD_BUDGET = 5150
 SETUP_BUDGET = 950
 AGENT_FILES = [os.path.join("prompts", "run.md"), os.path.join("prompts", "howto.md"), "SETUP.md"]
 

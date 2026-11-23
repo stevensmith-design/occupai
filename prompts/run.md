@@ -68,7 +68,7 @@ Reading the results:
 - **Audit:** per project only counts of packages with their **own** advisory by severity, and the top 3 fixes (the appendix holds the full list); `via_dependency_only` ones are fixed by fixing the dependency. With `mostly_in`, add "Most are in <folder>: say '<project>/<folder> is inactive' to quiet it". A lockfile with `error` is not covered, never "no vulnerabilities". Copy `route-check` notes and one line naming `generated_skipped` folders (build output, never audited) to "Not checked". `new_since_last` / `fixed_since_last` give the weekly delta.
 - **`not_reachable`** (from `changed`): under "Not checked", "<project> isn't readable from this task: attach the projects folder to both tasks".
 - **Unknown status:** a project with critical/high items and no decision in `your_decisions` gets one line: "Is <project> still active or deployed? Say '<project> is inactive' to quiet it."
-- **Stack:** `new_in_stack` from save-state becomes "New in your stack: <tech> (<projects>) — news watched; <checked_locally>".
+- **Stack:** `new_in_stack` from save-state becomes "New in your stack: <tech> (<projects>) — news watched; <checked_locally>"; add its `add_source` to `news_sources.stack_vendors`, saying so.
 
 ## 4. Tracker and library
 - News: add an `open` row for each new actionable item; set REOPENED on closed items with a material change; return snoozed rows whose date has passed to `open`. The news step never closes, snoozes or watches anything.

@@ -1,6 +1,6 @@
 # OccupAI how-to: procedures and hard rules
 
-Every OccupAI run reads this file first. `run.md` gives the step-by-step; where they differ, this file wins.
+`run.md` gives the step-by-step; where they differ, this file wins.
 
 ## Names used in these prompts
 - **KIT**: the OccupAI folder (`scan.py`, `prompts/`, `templates/`).
@@ -16,7 +16,7 @@ Every OccupAI run reads this file first. `run.md` gives the step-by-step; where 
     state/                      scan-state.json and progress files (machine-written)
   ```
   If a file is missing on the first run, copy it from `KIT/templates/`.
-- **ROOT**: `projects_root` from CONFIG. **SCAN**: `python3 KIT/scan.py` (Python 3 stdlib only, read-only; run `SCAN --help`).
+- **ROOT**: `projects_root` from CONFIG. **SCAN**: `python3 KIT/scan.py` (read-only; `SCAN --help`).
 - **Where the folders are:** a task created from a Claude Desktop chat runs in a device shell that sees each attached folder at `$HOME/mnt/<folder name>` (e.g. `$HOME/mnt/Desktop`). If a folder isn't at its usual path, use the mount; the script maps CONFIG's paths itself.
 
 ## Every run is unattended
