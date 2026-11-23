@@ -94,8 +94,12 @@ news_sources:
       url: https://www.python.org/news/security/
     - name: Claude Code security advisories
       url: https://github.com/anthropics/claude-code/security/advisories
-    - name: Model Context Protocol
-      url: https://modelcontextprotocol.io/
+    - name: MCP TypeScript SDK security advisories
+      url: https://github.com/modelcontextprotocol/typescript-sdk/security/advisories
+    - name: MCP Python SDK security advisories
+      url: https://github.com/modelcontextprotocol/python-sdk/security/advisories
+    - name: MCP servers security advisories
+      url: https://github.com/modelcontextprotocol/servers/security/advisories
     - name: OWASP GenAI Security Project
       url: https://genai.owasp.org/
   news:
