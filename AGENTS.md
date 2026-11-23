@@ -17,6 +17,7 @@ If told a project is inactive, not theirs, looked after by someone else or not t
 - Unattended runs don't ask questions: decide, note it, finish, and say what wasn't covered.
 
 ## Working on this repo itself
+Maintainers: also read `MAINTAINING.local.md` if it exists (it isn't part of the repository).
 - Python 3 standard library only, no dependencies. Keep the scanner read-only.
 - `make test` must pass; `make demo` must run offline.
 - Fixtures in `tests/fixtures/` are fake. Fake keys are generated at test time; never commit anything that looks like a real key.

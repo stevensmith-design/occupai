@@ -6,6 +6,9 @@ _reference/
 !.env.example
 .claude/settings.local.json
 
+# Maintainer-only notes (CLAUDE.local.md, MAINTAINING.local.md)
+*.local.md
+
 # Build output, demo output, caches
 build/
 node_modules/
