@@ -11,6 +11,7 @@ REPO = os.path.dirname(HERE)
 sys.path[:0] = [REPO, HERE]
 
 from test_p0_safety import realtmp  # noqa: E402
+from test_p1_correctness import StateCase  # noqa: E402
 from occupai_scan.hygiene import check_db  # noqa: E402
 from occupai_scan.match import run_match  # noqa: E402
 from occupai_scan.safefs import Policy  # noqa: E402
@@ -91,6 +92,31 @@ class TestSeveralRangesForOnePackage(TmpRoot):
         rules = [{"name": "left-pad", "affected": ">=1.0.0 <2.0.0"}, {"name": "left-pad", "affected": ">=3.0.0 <4.0.0"}]
         self.assertEqual(self.match({"package.json": '{"name": "app"}', "package-lock.json": json.dumps(lock)},
                                     rules), "open")
+
+
+class TestPythonManifestsAreAuditInputs(StateCase):
+    """A pyproject.toml added while an audit is paused makes the saved result stale."""
+
+    def test_resume_after_adding_pyproject_redoes_the_project(self):
+        prog = os.path.join(self.st_dir, "au-progress.json")
+        args = ("audit", "--only", "bad-deps,ui-kit", "--resume", prog, "--budget", "0")
+        self.assertEqual(self.run_(*args)["status"], "partial")  # bad-deps is done
+        write(self.p("bad-deps", "pyproject.toml"), "[project]\nname = 'bad-deps'\n")
+        out = self.run_(*args)
+        while out.get("status") == "partial":
+            out = self.run_(*args)
+        self.assertEqual(out["redone_changed_inputs"], ["bad-deps"])
+        self.assertIn("bad-deps/pyproject.toml: no-requirements-file", out["results"]["bad-deps"]["not_covered"])
+
+    def test_every_python_manifest_and_requirements_file_counts(self):
+        from occupai_scan import deps
+        for f in deps.PY_MANIFESTS + ("requirements.txt", "requirements-dev.txt"):
+            with self.subTest(f=f):
+                pol = Policy(self.root)
+                before = deps.audit_inputs(pol, "ui-kit")
+                write(self.p("ui-kit", "sub", f), "x\n")
+                self.assertNotEqual(before, deps.audit_inputs(pol, "ui-kit"))
+                os.remove(self.p("ui-kit", "sub", f))
 
 
 if __name__ == "__main__":

@@ -488,7 +488,8 @@ def run_audit(pol, unit, registry=DEFAULT_NPM_REGISTRY, opener=None):
     return r
 
 
-AUDIT_INPUTS = set(LOCKFILES) | {"package.json", "bun.lockb"} | set(UNSUPPORTED_PY) | OTHER_FILES
+# Requirements files are inputs too (is_requirements); a new Python manifest changes what's not covered.
+AUDIT_INPUTS = set(LOCKFILES) | {"package.json", "bun.lockb"} | set(UNSUPPORTED_PY) | set(PY_MANIFESTS) | OTHER_FILES
 
 
 def audit_inputs(pol, unit):
