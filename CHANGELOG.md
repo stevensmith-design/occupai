@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- **Every CVE of a multi-CVE issue is listed:** when a source names a set of CVEs for one issue (e.g. five nginx CVEs in one write-up), the briefing item lists all of them, each with its affected configuration in a few words, only as the source states them. Paid for by cutting text `run.md` and `howto.md` repeated from each other.
 - **First-day items say (NEW) (#20):** an item first reported in today's run is marked (NEW) in the to-do list; "(still open since <date>)" is only for items first reported on an earlier day.
 - **Build output is skipped everywhere (#18):** Xcode `SourcePackages` and `DerivedData`, SwiftPM `.build`, `.gradle`, `.svelte-kit`, `.nuxt` and `.output` join the folders that are never read (`build`, `dist`, `.next`, `out`, `Pods`, `target` already were). Xcode and SwiftPM checkouts in these folders can hold other projects' example lockfiles. The audit lists the generated folders it skipped (`generated_skipped`), and the scan names them in one line under "Not checked".
 - **Unaudited ecosystems are named (#19):** the audit lists every Dart, Ruby, Go, Rust, CocoaPods, PHP, Swift, Gradle, .NET or Elixir lockfile (or manifest, when there's no lockfile) as `not_covered`, per folder, so a project that uses one is never reported as fully checked. The scan puts them under "Not checked" (e.g. "Dart: not audited").

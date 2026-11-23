@@ -55,8 +55,8 @@ On "try again": ask for the access again if needed, then redo only the steps tha
 ## Efficiency rules: cut waste, not coverage
 - **Scripts do the work; you read summaries.** Check projects only through SCAN, never ad-hoc shell; what it doesn't cover is "not checked".
 - **Change-based hygiene:** `SCAN hygiene` re-checks only new or changed projects and reuses saved results for the rest. A project counts as changed when its git state or any file the checks read changes. A new script version or new exclusions re-check everything once; an incomplete last check is always redone.
-- **Dependency and news checks cover every project, changed or not.** A new advisory can affect an unchanged lockfile. `SCAN match` runs every day; `SCAN audit` in full runs.
-- **Short shell calls:** each may run in a fresh sandbox with no background jobs. Long steps use `--resume STORAGE/state/<step>-progress.json --budget 100`; repeat the command until it stops printing `"status": "partial"`. Never delete progress files.
+- **Dependency and news checks cover every project, changed or not.** A new advisory can affect an unchanged lockfile.
+- **Short shell calls:** each may run in a fresh sandbox with no background jobs. Long steps use `--resume STORAGE/state/<step>-progress.json --budget 100`. Never delete progress files.
 - **Use `--out STORAGE/state/<step>-out.json`:** the full JSON goes there and only a summary is printed. Open it only for details you need.
 - **Keep files small.** Full runs move rows closed for 30+ days to `actioned-archive.md` (never delete); one that becomes relevant again moves back as REOPENED.
 
@@ -64,7 +64,7 @@ On "try again": ask for the access again if needed, then redo only the steps tha
 Columns: `| ID | Item | First reported | Status | Updated | Note |`. One row per item, a stable ID (the CVE, or a lowercase slug).
 
 Statuses: `open`, `done`, `not-affected`, `snoozed until YYYY-MM-DD`, `watching`, `REOPENED`.
-- Only the user sets `snoozed` and `watching`. A snoozed row returns to open on its date.
+- Only the user sets `snoozed` and `watching`.
 - **REOPENED** only for a material change after the user acted: new IOCs or a new attack variant, exploitation started, the scope widened to the user's stack, a fix turned out incomplete, or a new project brought the issue back. Say what changed.
 - **The project checks may auto-close** with clear-cut evidence:
   - `not-affected`: the item can't touch any scanned project (no lockfile has the package, the affected tech isn't used, all affected versions are absent).
@@ -82,7 +82,7 @@ Statuses: `open`, `done`, `not-affected`, `snoozed until YYYY-MM-DD`, `watching`
 - Machine- and account-scoped items follow `status_machine` / `status_global`.
 
 ## Projects and onboarding
-`SCAN changed` lists project units (git repo roots, lockfile folders outside repos, top-level folders with neither). Every run onboards new ones (run.md step 3). Note removed projects in the changelog, then write projects.json.
+`SCAN changed` lists project units (git repo roots, lockfile folders outside repos, top-level folders with neither). Note removed projects in the changelog, then write projects.json.
 
 ## Standing hygiene checks (full runs, every project; re-checked when the project changes)
 `SCAN hygiene` runs four checks, plus key-like files outside projects (`keys_outside_projects`: names only, never opened; "move to ~/.ssh or delete").

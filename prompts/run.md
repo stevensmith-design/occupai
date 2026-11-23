@@ -1,6 +1,6 @@
 # OccupAI run (two tasks: briefing, then scan)
 
-Read `KIT/prompts/howto.md` first: its rules apply to every step. SCAN = `python3 KIT/scan.py`; you read its short JSON summaries.
+Read `KIT/prompts/howto.md` first: its rules apply to every step.
 
 **Goal:** a shareable news brief, and one private to-do list readable in three minutes: each action once, in priority order, only there.
 
@@ -30,6 +30,7 @@ Per new item, or tracker item with a material change (REOPENED or UPDATED, sayin
 - **ID**: the CVE or a stable lowercase slug. Reuse the tracker ID for known items.
 - **What happened** in two sentences, and one verbatim quote under 15 words from a page fetched in this run, with source and date (or "no quote: page not fetched").
 - **Claims match the source:** attribution (country, group), victim and impact numbers, "actively exploited" and "malicious" only as the fetched source states them. If it doesn't say it, leave it out or write "the source doesn't attribute it".
+- **Several CVEs for one issue:** when the source names a set, list every CVE, each with its affected configuration in a few words, only as the source states them.
 - **Priority** with a reason: CRITICAL (actively exploited, mass compromise, malware in a popular package), HIGH (serious, fix available, likely exploited), MEDIUM / LOW.
 - **Touches my stack?** yes / no / maybe, judged against stack.md (any listed tech), naming the projects. Before the first full run, use `stack` in CONFIG.
 - **What to do:** exact commands, fixed versions, indicators and what to rotate. Defang every IOC.
@@ -72,10 +73,9 @@ Reading the results:
 ## 4. Tracker and library
 - News: add an `open` row for each new actionable item; set REOPENED on closed items with a material change; return snoozed rows whose date has passed to `open`. The news step never closes, snoozes or watches anything.
 - Add a check to checks.json for every new actionable item (`KIT/schema/checks.schema.json`): `match` rules the scan can replay (`packages` with npm ranges or `"ecosystem": "pypi"`, `malicious_packages`, `runtimes`, `files`, `git`; machine-only checks in `match.machine`). Fill `status_by_project` from `match`.
-- Auto-close only with clear-cut evidence, noted `auto: <run> YYYY-MM-DD — <evidence>`. A project-scoped item closes only when every project in `status_by_project` is done or not-affected. Never auto-close machine-only checks, GitHub-side or account state, manual actions, or anything from a partial result. Never touch snoozed or watching rows, or rows with a `user:` note, except to add findings.
+- Auto-close only with clear-cut evidence (howto.md's note format). A project-scoped item closes only when every project in `status_by_project` is done or not-affected. Never auto-close machine-only checks, GitHub-side or account state, manual actions, or anything from a partial result. Never touch snoozed or watching rows, or rows with a `user:` note, except to add findings.
 - Hygiene rows `hygiene-<check>-<project>` (HIGH and MEDIUM, your projects only) and audit rows `audit-<project>` (open while it has any critical or high; note `C critical / H high: <names>`). They auto-close when fixed; a secret that was ever committed stays open until the user confirms rotation. Third-party clones get no rows.
 - Audit baseline: for critical/high packages that are direct dependencies or in 2+ projects, raise the minimum in baseline.md, add a matching check to checks.json, and add a changelog line.
-- Write projects.json. One changelog line per library change.
 
 ## 5. Two reports (briefing: news; scan: projects)
 Markers in both: 🔴 CRITICAL — do today / 🟠 HIGH — this week / 🟡 MEDIUM — when you can / ⚪ LOW — optional.
