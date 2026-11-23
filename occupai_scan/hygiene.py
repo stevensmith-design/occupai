@@ -172,9 +172,9 @@ def check_db(pol, unit):
     cov = Coverage()
     findings = []
     supabase = is_supabase_project(pol, unit, cov)
-    tables, rls, policies = {}, set(), set()
+    tables, rls, policies, sql = {}, {}, set(), []
     ct = re.compile(r"create\s+table\s+(if\s+not\s+exists\s+)?((public|\"public\")\.)?\"?([a-z0-9_]+)\"?", re.I)
-    en = re.compile(r"alter\s+table\s+(only\s+)?((public|\"public\")\.)?\"?([a-z0-9_]+)\"?\s+enable\s+row\s+level\s+security", re.I)
+    en = re.compile(r"alter\s+table\s+(only\s+)?((public|\"public\")\.)?\"?([a-z0-9_]+)\"?\s+(enable|disable)\s+row\s+level\s+security", re.I)
     po = re.compile(r"create\s+policy\s+.+?\s+on\s+((public|\"public\")\.)?\"?([a-z0-9_]+)\"?", re.I | re.S)
 
     def wanted(a):
@@ -189,11 +189,7 @@ def check_db(pol, unit):
                 s = pol.read_text(fp, MAX_TEXT, cov)
                 if s is None:
                     continue
-                s = re.sub(r"--[^\n]*", "", re.sub(r"/\*.*?\*/", "", s, flags=re.S))  # strip SQL comments
-                for m in ct.finditer(s):
-                    tables.setdefault(m.group(4).lower(), rel)
-                rls |= {m.group(4).lower() for m in en.finditer(s)}
-                policies |= {m.group(3).lower() for m in po.finditer(s)}
+                sql.append((rel, re.sub(r"--[^\n]*", "", re.sub(r"/\*.*?\*/", "", s, flags=re.S))))  # no comments
             elif f in DB_RULE_FILES[:2]:
                 s = pol.read_text(fp, MAX_TEXT, cov)
                 if s and re.search(r"allow\s+(read|write|read,\s*write|write,\s*read)\s*(:\s*if\s+true)?\s*;", s):
@@ -202,10 +198,17 @@ def check_db(pol, unit):
                 s = pol.read_text(fp, MAX_TEXT, cov)
                 if s and re.search(r'"\.(read|write)"\s*:\s*true', s):
                     findings.append({"type": "firebase-rtdb-open-rule", "file": rel, "severity": "high"})
+    # Migration order: files sorted by path, statements in order; the last ENABLE/DISABLE per table wins.
+    for rel, s in sorted(sql):
+        for m in ct.finditer(s):
+            tables.setdefault(m.group(4).lower(), rel)
+        for m in en.finditer(s):
+            rls[m.group(4).lower()] = m.group(5).lower() == "enable"
+        policies |= {m.group(3).lower() for m in po.finditer(s)}
     for t, rel in sorted(tables.items()):
         if t.startswith(("schema_migrations", "_prisma", "knex_")):
             continue
-        if t not in rls:
+        if not rls.get(t):
             findings.append({"type": "supabase-table-without-rls", "table": t, "file": rel, "severity": "high"})
         elif t not in policies:
             findings.append({"type": "rls-enabled-no-policy", "table": t, "file": rel, "severity": "info"})
