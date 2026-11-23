@@ -123,6 +123,10 @@ STORAGE (KIT/data)     actioned.md · library/ (checks.json, baseline.md) · sta
 - **Local runs need your computer on.** Scheduled tasks skip or catch up when it's asleep, depending on the tool.
 - v0.1: the scan script, SETUP.md's steps and the demo are covered by offline tests.
 
+## Troubleshooting
+
+**No briefing or scan today?** If your computer was off or asleep at the scheduled time, Claude pauses the task and keeps it paused. Open the task in your scheduled tasks and switch it back on (or run it now). Your data and settings are kept.
+
 ## FAQ
 
 **Does it send my code anywhere?** The script doesn't. It reads files locally and talks only to npm's registry (through `npm audit`) and pypi.org. The AI agent you run sees what the prompts tell it to read: short JSON summaries, file names and finding types, never secret values. Check your agent's own data policy.
