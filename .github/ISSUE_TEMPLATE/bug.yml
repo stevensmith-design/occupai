@@ -1,0 +1,34 @@
+name: Bug
+description: Something in setup, a run, a report or scan.py didn't work as documented.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Never paste real secrets, tokens or private project names.** Replace them with fake values.
+        Found a way the kit could leak a secret or write to a project? Use the private security report instead.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps or command to reproduce
+      placeholder: python3 scan.py ... (or which prompt / scheduled task)
+  - type: input
+    id: version
+    attributes:
+      label: OccupAI version
+      placeholder: e.g. 0.2.0 (see CHANGELOG.md)
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Agent, OS and Python
+      placeholder: e.g. Claude Code, macOS 15, Python 3.13
+    validations:
+      required: true

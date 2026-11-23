@@ -1,0 +1,32 @@
+name: Missed detection or false positive
+description: A check flagged something it shouldn't, or missed something it should have caught.
+labels: [noise]
+body:
+  - type: markdown
+    attributes:
+      value: "**Use fake values only.** A minimal made-up file that shows the problem is ideal; it can become a test fixture."
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind
+      options: [False positive, Missed detection]
+    validations:
+      required: true
+  - type: input
+    id: check
+    attributes:
+      label: Check or finding ID
+      placeholder: e.g. gha / action-not-pinned-to-sha
+  - type: textarea
+    id: example
+    attributes:
+      label: Minimal example (fake values)
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: OccupAI version
+    validations:
+      required: true

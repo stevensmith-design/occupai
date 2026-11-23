@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Report a security problem in the kit (private)
+    url: https://github.com/stevensmith-design/occupai/security/advisories/new
+    about: A way the kit could leak a secret, write to a project or be steered by a web page. Please don't open a public issue.
